@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Programs
+PYTHON=python3
+
+# Input paramters
+RUNS="2"  
+A="5"  # Cubic lattice constant
+ELEMENTS="['Zr', 'Cu']"  # Elements
+NUMBERS="[50, 50]"  # Number corresponding to each element
+COORDS="'../templates/poscar/125.txt'"  # Starting coordinates
+SAVE="'../runs/melt_quench/Zr50Cu50'"  # Location to save POSCAR
+
+cd ../scripts
+${PYTHON} generate_structure.py "${A}" "${ELEMENTS}" "${NUMBERS}" "${COORDS}" "${SAVE}" "${RUNS}"
