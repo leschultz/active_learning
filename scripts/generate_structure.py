@@ -16,6 +16,7 @@ runs = sys.argv[6]  # The number of runs to generate
 
 coords = np.loadtxt(coords)  # Load starting coordinates
 coords = coords/coords.max(axis=0)  # Make fractional
+np.random.shuffle(coords)  # Randomize coordinates
 
 # Generates structure
 structure = functions.gen_cubic(
