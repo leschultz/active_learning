@@ -18,6 +18,7 @@ runs = sys.argv[6]  # The number of runs to generate
 incar = sys.argv[7]  # The VASP input file
 kpoints = sys.argv[8]  # The VASP kpoints file
 potcar = sys.argv[9]  # The VASP potential file
+submit = sys.argv[10]  # The cluster submit file
 
 coords = np.loadtxt(coords)  # Load starting coordinates
 coords = coords/coords.max(axis=0)  # Make fractional
@@ -61,6 +62,7 @@ for number in numbers:
 
     copyfile(incar, os.path.join(run, 'INCAR'))  # Save INCAR
     copyfile(kpoints, os.path.join(run, 'KPOINTS'))  # Save KPOINTS
+    copyfile(submit, os.path.join(run, 'paralle.sh'))  # Save KPOINTS
 
     # Save POSCAR
     structure.to(fmt='poscar', filename=os.path.join(run, 'POSCAR'))
