@@ -20,7 +20,7 @@ ISIF=3  # Whether the stress tensor is calculated and which principal DOF can ch
 MDALGO = 3  # The molecular dynamics simulation protocol.
 SMASS = 1  # Controls the velocities during ab-initio molecular dynamics run.
 POTIM = 4.0  # Time step fs.
-NSW = 4000  # The maximum number of ionic steps.
+NSW = 1000  # The maximum number of ionic steps.
 TEBEG = 2000  # Initial temperatures set by Maxwell-Boltzmann distribution. 
 TEEND = 2000  # Ending temperature.
 
