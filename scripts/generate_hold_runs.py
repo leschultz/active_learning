@@ -62,7 +62,7 @@ for number in numbers:
 
     copyfile(incar, os.path.join(run, 'INCAR'))  # Save INCAR
     copyfile(kpoints, os.path.join(run, 'KPOINTS'))  # Save KPOINTS
-    copyfile(submit, os.path.join(run, 'paralle.sh'))  # Save KPOINTS
+    copyfile(submit, os.path.join(run, 'parallel.sh'))  # Save KPOINTS
 
     # Save POSCAR
     structure.to(fmt='poscar', filename=os.path.join(run, 'POSCAR'))

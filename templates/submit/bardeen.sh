@@ -1,3 +1,4 @@
+#!/bin/bash
 
 # Declare a name for this job
 #$ -N parallel
@@ -29,4 +30,4 @@
 source /share/apps/intel/parallel_studio_xe_2016.4.072/psxevars.sh intel64
 
 # The executable for parallel jobs
-$MPI_HOME/mpiexec -n $NSLOTS vasp_std > out.txt
+mpirun -n $NSLOTS vasp_std > out.txt
