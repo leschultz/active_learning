@@ -2,6 +2,7 @@
 
 DIR="../runs"  # The parent directory of runs
 SUB="parallel.sh"  # The submit file
+SUBMITTER="qsub"  # The scheduler submit command
 
 FNAME=find ${DIR} -type f -name ${SUB}
 
@@ -11,6 +12,6 @@ IFS=$'\n'
 while read -r FNAME ;
 do
     pushd $(dirname "${FNAME}") > /dev/null
-    qsub ${SUB}
+    ${SUBMITTER} ${SUB}
     popd > /dev/null
 done < <(find . -type f -name ${SUB})
