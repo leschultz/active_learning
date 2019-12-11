@@ -1,32 +1,33 @@
-SYSTEM = 1500K  # The title string for identification.
+SYSTEM = 1500K    # The title string for identification.
 
-### Parallel part
-NPAR = 4  # Determines the number of bands that are treated in parallel. ~sqrt(# of cores).
+### General Setup
+NPAR = 2          # Determines the number of bands that are treated in parallel. ~sqrt(# of cores).
+ISTART = 0        # Whether or not to read the WAVECAR file.
 
 ### Electronic structure part
-PREC = Normal  # The precision mode.
-ALGO = Very Fast  # The electronic minimization algorithm.
-LREAL = A  # Whether the projection operators are evalulated in real-space or reciprocal space.
-ISMEAR = 1  # How the partial occupancies are set for each orbital.
-SIGMA = 0.2  # The width of the smearing in eV.
-ISYM = 0  # The way symmetry is treated.
-EDIFF = 1E-5  # The global break condition for the electronic SC-loop.
-MAXMIX = 15  # The maximum number of steps stored in Broyden mixer.
-NELMIN = 2  # The minimum number of electronic SCF steps.
+PREC = Normal     # The precision mode.
+ALGO = Normal     # The electronic minimization algorithm.
+LREAL = A         # Whether the projection operators are evalulated in real-space or reciprocal space.
+ISMEAR = 1        # How the partial occupancies are set for each orbital.
+SIGMA = 0.2       # The width of the smearing in eV.
+ISYM = 0          # The way symmetry is treated.
+EDIFF = 1E-5      # The global break condition for the electronic SC-loop.
+MAXMIX = 15       # The maximum number of steps stored in Broyden mixer.
+NELMIN = 2        # The minimum number of electronic SCF steps.
+NELM = 250        # The maximum number of electronic SC steps wich may be performed.
 
 ### MD part
-IBRION = 0  # Molecular dynamics is performed.
-ISIF=3  # Whether the stress tensor is calculated and which principal DOF can change.
-MDALGO = 3  # The molecular dynamics simulation protocol.
-SMASS = 1  # Controls the velocities during ab-initio molecular dynamics run.
-POTIM = 4.0  # Time step fs.
-NSW = 4000  # The maximum number of ionic steps.
-TEBEG = 1500  # Initial temperatures set by Maxwell-Boltzmann distribution. 
-TEEND = 1500  # Ending temperature.
+IBRION = 0        # Molecular dynamics is performed.
+ISIF = 3          # Whether the stress tensor is calculated and which principal DOF can change.
+MDALGO = 3        # The molecular dynamics simulation protocol.
+SMASS = 1         # Controls the velocities during ab-initio molecular dynamics run.
+POTIM = 4.0       # Time step fs.
+NSW = 4000        # The maximum number of ionic steps.
+TEBEG = 1500      # Initial temperatures set by Maxwell-Boltzmann distribution. 
+TEEND = 1500      # Ending temperature.
 
 ### Output part
-NWRITE = 1  # How much will be wwritten to OUTCAR.
-NBLOCK = 1  # Ionic steps the pair correlation function and DOS are calculated.
-ISTART = 0  # Whether or not to read the WAVECAR file.
+NWRITE = 1        # How much will be written to OUTCAR.
+NBLOCK = 1        # Ionic steps the pair correlation function and DOS are calculated.
 LCHARG = .FALSE.  # Determines whether the carge densitites are written.
-LWAVE = .FALSE.  # Determines whether the wavefunctions are written.
+LWAVE = .FALSE.   # Determines whether the wavefunctions are written.
