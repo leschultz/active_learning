@@ -4,8 +4,7 @@
 PYTHON=python3
 
 # Input paramters
-RUNS="10"  
-A="20"  # Cubic lattice constant
+RUNS="[10, 12, 14, 16, 18, 20]"  # List of cubic lattice constants
 ELEMENTS="['Ni', 'P']"  # Elements
 NUMBERS="[8, 2]"  # Number corresponding to each element
 COORDS="'../templates/poscar/256.txt'"  # Starting coordinates
@@ -16,4 +15,4 @@ POTCAR="'/home/leschultz/work/POTCARs/paw/LDA/5.4'"  # The VASP potential direct
 SUB="'../templates/submit/bardeen.sh'"  # The submit file
 
 cd ../scripts
-${PYTHON} generate_hold_runs.py "${A}" "${ELEMENTS}" "${NUMBERS}" "${COORDS}" "${SAVE}" "${RUNS}" "${INCAR}" "${KPOINTS}"  "${POTCAR}" "${SUB}"
+${PYTHON} generate_hold_runs.py "${ELEMENTS}" "${NUMBERS}" "${COORDS}" "${SAVE}" "${RUNS}" "${INCAR}" "${KPOINTS}"  "${POTCAR}" "${SUB}"
