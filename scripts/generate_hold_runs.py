@@ -45,6 +45,10 @@ for number in runs:
         if i == 'Zr':
             i = 'Zr_sv'
 
+        # Missing Ca potential
+        if i == 'Ca':
+            i = 'Ca_sv'
+
         pots.append(os.path.join(*[potcar, i, 'POTCAR']))
 
     # Write run
