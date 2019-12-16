@@ -8,6 +8,9 @@ def create_dir(path):
 
     inputs:
         path = The directory to create.
+
+    outputs:
+        NA
     '''
 
     if not os.path.exists(path):

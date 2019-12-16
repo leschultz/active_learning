@@ -27,5 +27,9 @@ df = iterators.iterate(
                        fraction,
                        )
 
+# Create directory and save data
 functions.create_dir(save_dir)
-df.to_csv(join(save_dir, save_name), index=False)
+save = join(save_dir, save_name)
+df.to_csv(save, index=False)
+
+print('Saved: '+save)
