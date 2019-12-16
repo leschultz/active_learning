@@ -6,7 +6,7 @@ import functions
 incar = 'INCAR'  # INCAR file
 poscar = 'POSCAR'  # POSCAR file
 outcar = 'OUTCAR'  # OUTCAR file
-vol_dir = '../../volumes'  # Run directory
+vol_dir = '../../run_sets'  # Run directory
 fraction = 0.5  # The fraction of hold data to average
 save_dir = '../data'  # The save folder
 save_name = 'data.csv'  # The save name
