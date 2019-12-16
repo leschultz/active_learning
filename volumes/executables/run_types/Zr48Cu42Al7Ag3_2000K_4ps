@@ -12,7 +12,7 @@ SAVE="'../runs/holds/Zr48Cu42Al7Ag3/2000K/4ps'"  # Location to save POSCAR
 INCAR="'../templates/incar/temperature_2000K_4ps'"  # The VASP input file
 KPOINTS="'../templates/kpoints/M'"  # The VASP kpoints file
 POTCAR="'/home/leschultz/work/POTCARs/paw/LDA/5.4'"  # The VASP potential directory
-SUB="'../templates/submit/bardeen_morgan.q'"  # The submit file
+SUB="'../templates/submit/bardeen_yipeng.q'"  # The submit file
 
 cd ../../scripts
 ${PYTHON} generate_hold_runs.py "${ELEMENTS}" "${NUMBERS}" "${COORDS}" "${SAVE}" "${RUNS}" "${INCAR}" "${KPOINTS}" "${POTCAR}" "${SUB}"

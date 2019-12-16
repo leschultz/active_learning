@@ -12,7 +12,7 @@ SAVE="'../runs'"  # Location to save POSCAR
 INCAR="'../templates/incar/test'"  # The VASP input file
 KPOINTS="'../templates/kpoints/M'"  # The VASP kpoints file
 POTCAR="'/home/leschultz/work/POTCARs/paw/LDA/5.4'"  # The VASP potential directory
-SUB="'../templates/submit/bardeen.sh'"  # The submit file
+SUB="'../templates/submit/bardeen_yipeng.q'"  # The submit file
 
 cd ../scripts
 ${PYTHON} generate_hold_runs.py "${ELEMENTS}" "${NUMBERS}" "${COORDS}" "${SAVE}" "${RUNS}" "${INCAR}" "${KPOINTS}"  "${POTCAR}" "${SUB}"

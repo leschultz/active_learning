@@ -1,6 +1,6 @@
 ### General setup
 SYSTEM = 1000K    # The title string for identification.
-NPAR = 2          # Determines the number of bands that are treated in parallel. ~sqrt(# of cores).
+NPAR = 4          # Determines the number of bands that are treated in parallel. ~sqrt(# of cores).
 ISTART = 0        # Whether or not to read the WAVECAR file.
 
 ### Electronic structure part
@@ -20,12 +20,12 @@ IBRION = 0        # Determines how the ions are updated and moved.
 MDALGO = 2        # The molecular dynamics simulation protocol.
 SMASS = 1         # Controls the velocities during ab-initio molecular dynamics run.
 POTIM = 4.0       # Time step fs.
-NSW = 4000        # The maximum number of ionic steps.
-TEBEG = 1000      # Initial temperatures set by Maxwell-Boltzmann distribution. 
-TEEND = 1000      # Ending temperature.
+NSW = 2           # The maximum number of ionic steps.
+TEBEG = 2000      # Initial temperatures set by Maxwell-Boltzmann distribution. 
+TEEND = 2000      # Ending temperature.
 
 ### Output part
-NWRITE = 1        # How much will be written to OUTCAR.
+NWRITE = 2        # How much will be written to OUTCAR.
 NBLOCK = 1        # Ionic steps the pair correlation function and DOS are calculated.
 LCHARG = .FALSE.  # Determines whether the carge densitites are written.
 LWAVE = .FALSE.   # Determines whether the wavefunctions are written.
