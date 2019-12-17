@@ -1,0 +1,17 @@
+#!/bin/bash
+
+DIR="../runs"  # The parent directory of runs
+SUB="parallel.sh"  # The submit file
+SUBMITTER="qsub"  # The scheduler submit command
+
+FNAME=find ${DIR} -type f -name ${SUB}
+
+# Submit all submission files in DIR
+cd ${DIR}
+IFS=$'\n'
+while read -r FNAME ;
+do
+    pushd $(dirname "${FNAME}") > /dev/null
+    ${SUBMITTER} ${SUB}
+    popd > /dev/null
+done < <(find . -type f -name ${SUB})
