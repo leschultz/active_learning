@@ -103,7 +103,7 @@ def analysis(path, incar, poscar, outcar, fraction, save_plots=False):
 
         pl.close('all')
 
-    return comp, vol, press, temp, start_temp, end_temp
+    return comp, volume, pressure, temperature, start_temp, end_temp
 
 
 def iterate(paths, *args, **kwargs):

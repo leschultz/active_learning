@@ -9,20 +9,27 @@ import functions
 # Input parameters
 df = '../../gather_data/data/data.csv'  # Path to data file
 density = 10000  # The number of points to use in fit
-show_plots = False  # Display plots or not
-save_dir = '../data'  # The save folder
-save_name = 'data.csv'  # The save name
+data_save_dir = '../data'  # The data save folder
+data_save_name = 'data.csv'  # The data save name
+save_plots = '../figures'  # The figures save folder
 
+# Load Data
 df = pd.read_csv(df)
-df = df.sort_values(by=['volume'])
-groups = df.groupby(['composition'])
+df = df.sort_values(by=['volume', 'start_temperature', 'end_temperature'])
+
+# Group data
+groups = df.groupby(['composition', 'start_temperature', 'end_temperature'])
+
+# Create figures directory
+functions.create_dir(save_plots)
 
 compositions = []
 temperatures = []
 volumes = []
 
 for group, values in groups:
-    print('Grouped by: '+str(group))
+    name = str(group)
+    print('Grouped by: '+name)
 
     y = values['pressure'].values
     x = values['volume'].values
@@ -38,10 +45,9 @@ for group, values in groups:
     ynew = [y[neg], y[pos]]
 
     m, b, r, p, std = linregress(xnew, ynew)
-    line = lambda x: m*x+b
 
     xfit = np.linspace(min(xnew), max(xnew), density)
-    yfit = np.array(list(map(line, xfit)))
+    yfit = np.array(list(map(lambda x: m*x+b, xfit)))
 
     index = functions.nearest(0, yfit)
 
@@ -49,14 +55,32 @@ for group, values in groups:
     temperatures.append(np.unique(values['end_temperature'])[0])
     volumes.append(xfit[index])
 
-    if show_plots:
+    if save_plots:
         fig, ax = pl.subplots()
-        ax.plot(xfit, yfit, linestyle='none', marker='.')
-        ax.plot(xfit[index], yfit[index], marker='8')
-        ax.plot(x, y, linestyle='none', marker='*')
+
+        ax.plot(
+                xfit,
+                yfit,
+                label='Extrapolation'
+                )
+        ax.plot(
+                xfit[index],
+                yfit[index],
+                marker='8',
+                label='Zero Pressure',
+                )
+        ax.plot(
+                x,
+                y,
+                linestyle='none',
+                marker='*',
+                label='Data'
+                )
+
         ax.set_xlabel(r'Volumes $[\AA^{3}]$')
         ax.set_ylabel(r'Pressure $[kB]$')
-        pl.show()
+
+        fig.savefig(join(save_plots, name))
         pl.close('all')
 
 df = {
@@ -68,8 +92,8 @@ df = {
 df = pd.DataFrame(df)
 
 # Create directory and save data
-functions.create_dir(save_dir)
-save = join(save_dir, save_name)
-df.to_csv(save, index=False)
+functions.create_dir(data_save_dir)
+data_save = join(data_save_dir, data_save_name)
+df.to_csv(data_save, index=False)
 
-print(df)
+print('Saved: '+str(data_save))
