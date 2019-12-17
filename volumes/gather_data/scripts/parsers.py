@@ -73,11 +73,13 @@ def outcar(path):
         volumes = The volume data.
         pressures =  The pressure data.
         temperatures = The temperature data.
+        etotal = The total energy of the system.
     '''
 
     volumes = []
     pressures = []
     temperatures = []
+    etotal = []
 
     iteration = 0
     with open(path) as f:
@@ -103,8 +105,12 @@ def outcar(path):
                 if '(temperature' in line:
                     temperatures.append(float(line[5]))
 
+                if 'ETOTAL' in line:
+                    etotal.append(float(line[4]))
+
     volumes = np.array(volumes)
     pressures = np.array(pressures)
     temperatures = np.array(temperatures)
+    etotal = np.array(etotal)
 
-    return composition, volumes, pressures, temperatures
+    return composition, volumes, pressures, temperatures, etotal
