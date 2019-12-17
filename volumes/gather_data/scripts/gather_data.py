@@ -8,6 +8,7 @@ poscar = 'POSCAR'  # POSCAR file
 outcar = 'OUTCAR'  # OUTCAR file
 vol_dir = '../../run_sets'  # Run directory
 fraction = 0.5  # The fraction of hold data to average
+show_plots = True  # Display plots or not
 save_dir = '../data'  # The save folder
 save_name = 'data.csv'  # The save name
 
@@ -25,6 +26,7 @@ df = iterators.iterate(
                        poscar,
                        outcar,
                        fraction,
+                       show_plots,
                        )
 
 # Create directory and save data

@@ -1,3 +1,4 @@
+from matplotlib import pyplot as pl
 from os.path import join
 from math import floor
 import pandas as pd
@@ -5,7 +6,7 @@ import numpy as np
 import parsers
 
 
-def analysis(path, incar, poscar, outcar, fraction):
+def analysis(path, incar, poscar, outcar, fraction, show_plots):
     '''
     The analysis for a run.
 
@@ -15,11 +16,13 @@ def analysis(path, incar, poscar, outcar, fraction):
         poscar = The POSCAR file.
         outcar = The OUTCAR file.
         fraction = The amount of data to average.
+        show_plots = Wheter to display analysis plots.
 
     outputs:
-        volume = The average system volume.
-        pressure = The average system pressure.
-        temprature = The average system temperature.
+        comp = The composition.
+        vol = The average system volume.
+        press = The average system pressure.
+        temp = The average system temperature.
         start_temp = The starting temperature defined in INCAR.
         end_temp = The ending temperature defined in INCAR.
     '''
@@ -33,18 +36,53 @@ def analysis(path, incar, poscar, outcar, fraction):
     lattice, coords = parsers.poscar(join(path, poscar))
 
     # OUTCAR paramters
-    composition, volumes, pressures, temperatures = parsers.outcar(join(
-                                                                        path,
-                                                                        outcar
-                                                                        ))
+    comp, vol, press, temp = parsers.outcar(join(path, outcar))
+
+    # Find minium data length because of runs stopping abruptly
+    cut = min(map(len, [vol, press, temp]))
+    vol = vol[:cut]
+    press = press[:cut]
+    temp = temp[:cut]
 
     # Average the last percent amount of holds data
-    start = floor(fraction*len(pressures))
-    volume = np.mean(volumes[start:])
-    pressure = np.mean(pressures[start:])
-    temperature = np.mean(temperatures[start:])
+    start = floor(fraction*len(press))
+    volume = np.mean(vol[start:])
+    pressure = np.mean(press[start:])
+    temperature = np.mean(temp[start:])
 
-    return composition, volume, pressure, temperature, start_temp, end_temp
+    if show_plots:
+        n = 3  # Number of plots
+        fig, ax = pl.subplots(n)
+
+        x = np.array(range(len(vol)))*float(params['POTIM'])  # Time
+
+        ax[0].plot(x, vol, color='b', label=r'Data')
+        ax[1].plot(x, press, color='b', label=r'Data')
+        ax[2].plot(x, temp, color='b', label=r'Data')
+
+        ax[0].axhline(volume, xmin=fraction, color='g', label=r'Mean Data')
+        ax[1].axhline(pressure, xmin=fraction, color='g', label=r'Mean Data')
+        ax[2].axhline(temperature, xmin=fraction, color='g', label=r'Mean Data')
+
+        ax[0].set_ylabel(r'Volume $[\AA^{3}]$')
+        ax[1].set_ylabel(r'Pressure $[\AA^{3}]$')
+        ax[2].set_ylabel(r'Temperature $[\AA^{3}]$')
+        
+        for i in range(n):
+            ax[i].axvline(
+                          start*float(params['POTIM']),
+                          linestyle=':',
+                          color='r',
+                          label='Averaging start'
+                          )
+            ax[i].legend(loc='best')
+
+        ax[-1].set_xlabel(r'Time $[fs]$')
+        fig.tight_layout()
+        pl.show()
+        pl.close('all')
+
+    return comp, vol, press, temp, start_temp, end_temp
 
 
 def iterate(paths, *args, **kwargs):

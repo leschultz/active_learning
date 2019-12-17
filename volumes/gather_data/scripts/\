@@ -70,11 +70,13 @@ def outcar(path):
         path = The file path.
 
     outputs:
+        iterations = The ionic steps.
         volumes = The volume data.
         pressures =  The pressure data.
         temperatures = The temperature data.
     '''
 
+    iterations = []
     volumes = []
     pressures = []
     temperatures = []
@@ -94,6 +96,9 @@ def outcar(path):
 
             if iteration > 0:
 
+                if 'Iteration' in line:
+                    iterations.append(int(line[2].split('(')))
+
                 if ('volume' in line) and ('cell' in line):
                     volumes.append(float(line[-1]))
 
@@ -103,8 +108,9 @@ def outcar(path):
                 if '(temperature' in line:
                     temperatures.append(float(line[5]))
 
+    iterations = np.array(iterations)
     volumes = np.array(volumes)
     pressures = np.array(pressures)
     temperatures = np.array(temperatures)
 
-    return composition, volumes, pressures, temperatures
+    return iterations, composition, volumes, pressures, temperatures
