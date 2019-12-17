@@ -61,21 +61,22 @@ def analysis(path, incar, poscar, outcar, fraction, save_plots=False):
         ax[1].plot(x, press, color='b', label=r'Data')
         ax[2].plot(x, temp, color='b', label=r'Data')
 
+        xmin = x[start]/(max(x)-min(x))  # Fraction not exact due to rounding
         ax[0].axhline(
                       volume,
-                      xmin=fraction,
+                      xmin=xmin,
                       color='g',
                       label=r'Mean Data'
                       )
         ax[1].axhline(
                       pressure,
-                      xmin=fraction,
+                      xmin=xmin,
                       color='g',
                       label=r'Mean Data'
                       )
         ax[2].axhline(
                       temperature,
-                      xmin=fraction,
+                      xmin=xmin,
                       color='g',
                       label=r'Mean Data'
                       )
