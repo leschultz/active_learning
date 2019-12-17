@@ -3,10 +3,11 @@ from os.path import join
 from math import floor
 import pandas as pd
 import numpy as np
+import functions
 import parsers
 
 
-def analysis(path, incar, poscar, outcar, fraction, show_plots):
+def analysis(path, incar, poscar, outcar, fraction, save_plots=False):
     '''
     The analysis for a run.
 
@@ -16,7 +17,7 @@ def analysis(path, incar, poscar, outcar, fraction, show_plots):
         poscar = The POSCAR file.
         outcar = The OUTCAR file.
         fraction = The amount of data to average.
-        show_plots = Wheter to display analysis plots.
+        save_plots = Whether to save analysis plots.
 
     outputs:
         comp = The composition.
@@ -50,7 +51,7 @@ def analysis(path, incar, poscar, outcar, fraction, show_plots):
     pressure = np.mean(press[start:])
     temperature = np.mean(temp[start:])
 
-    if show_plots:
+    if save_plots:
         n = 3  # Number of plots
         fig, ax = pl.subplots(n)
 
@@ -60,14 +61,29 @@ def analysis(path, incar, poscar, outcar, fraction, show_plots):
         ax[1].plot(x, press, color='b', label=r'Data')
         ax[2].plot(x, temp, color='b', label=r'Data')
 
-        ax[0].axhline(volume, xmin=fraction, color='g', label=r'Mean Data')
-        ax[1].axhline(pressure, xmin=fraction, color='g', label=r'Mean Data')
-        ax[2].axhline(temperature, xmin=fraction, color='g', label=r'Mean Data')
+        ax[0].axhline(
+                      volume,
+                      xmin=fraction,
+                      color='g',
+                      label=r'Mean Data'
+                      )
+        ax[1].axhline(
+                      pressure,
+                      xmin=fraction,
+                      color='g',
+                      label=r'Mean Data'
+                      )
+        ax[2].axhline(
+                      temperature,
+                      xmin=fraction,
+                      color='g',
+                      label=r'Mean Data'
+                      )
 
         ax[0].set_ylabel(r'Volume $[\AA^{3}]$')
         ax[1].set_ylabel(r'Pressure $[\AA^{3}]$')
         ax[2].set_ylabel(r'Temperature $[\AA^{3}]$')
-        
+
         for i in range(n):
             ax[i].axvline(
                           start*float(params['POTIM']),
@@ -79,7 +95,12 @@ def analysis(path, incar, poscar, outcar, fraction, show_plots):
 
         ax[-1].set_xlabel(r'Time $[fs]$')
         fig.tight_layout()
-        pl.show()
+
+        # Create directory and save figure
+        save_dir = join(save_plots, path.strip('../'))
+        functions.create_dir(save_dir)
+        fig.savefig(join(save_dir, 'thermodynamics.png'))
+
         pl.close('all')
 
     return comp, vol, press, temp, start_temp, end_temp

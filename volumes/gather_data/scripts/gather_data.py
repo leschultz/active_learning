@@ -8,9 +8,9 @@ poscar = 'POSCAR'  # POSCAR file
 outcar = 'OUTCAR'  # OUTCAR file
 vol_dir = '../../run_sets'  # Run directory
 fraction = 0.5  # The fraction of hold data to average
-show_plots = True  # Display plots or not
-save_dir = '../data'  # The save folder
-save_name = 'data.csv'  # The save name
+data_save_dir = '../data'  # The data save folder
+data_save_name = 'data.csv'  # The data save name
+save_plots = '../figures'  # The figures save folder
 
 # Paths for run files
 incar_paths = functions.finder(incar, vol_dir)
@@ -26,12 +26,12 @@ df = iterators.iterate(
                        poscar,
                        outcar,
                        fraction,
-                       show_plots,
+                       save_plots,
                        )
 
 # Create directory and save data
-functions.create_dir(save_dir)
-save = join(save_dir, save_name)
-df.to_csv(save, index=False)
+functions.create_dir(data_save_dir)
+data_save = join(data_save_dir, data_save_name)
+df.to_csv(data_save, index=False)
 
-print('Saved: '+save)
+print('Saved: '+data_save)
