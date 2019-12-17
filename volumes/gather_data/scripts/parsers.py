@@ -105,7 +105,7 @@ def outcar(path):
                 if '(temperature' in line:
                     temperatures.append(float(line[5]))
 
-                if 'ETOTAL' in line:
+                if ('free' in line) and ('TOTEN' in line):
                     etotal.append(float(line[4]))
 
     volumes = np.array(volumes)
