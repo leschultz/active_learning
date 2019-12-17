@@ -91,15 +91,18 @@ def analysis(path, incar, poscar, outcar, fraction, save_plots=False):
                           color='r',
                           label='Averaging start'
                           )
-            ax[i].legend(loc='best')
+            ax[i].legend(loc='upper left')
 
         ax[-1].set_xlabel(r'Time $[fs]$')
         fig.tight_layout()
 
+        name = path.strip('../')
+        name = name.split('/')
+        name = '_'.join(name)
+        name += '_thermodynamic.png'
+
         # Create directory and save figure
-        save_dir = join(save_plots, path.strip('../'))
-        functions.create_dir(save_dir)
-        fig.savefig(join(save_dir, 'thermodynamics.png'))
+        fig.savefig(join(save_plots, name))
 
         pl.close('all')
 

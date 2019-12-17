@@ -19,6 +19,9 @@ poscar_paths = functions.finder(poscar, vol_dir)
 # Paths containing all relevant files
 paths = incar_paths.intersection(poscar_paths)
 
+# Create directory to save plots
+functions.create_dir(save_plots)
+
 # Iterate for every run
 df = iterators.iterate(
                        paths,
