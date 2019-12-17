@@ -25,7 +25,7 @@ functions.create_dir(save_plots)
 
 compositions = []
 temperatures = []
-volumes = []
+lengths = []
 
 for group, values in groups:
     name = str(group)
@@ -33,6 +33,7 @@ for group, values in groups:
 
     y = values['pressure'].values
     x = values['volume'].values
+    x **= 1/3
 
     for i in range(y.shape[0]):
         if y[i] <= 0:
@@ -53,7 +54,7 @@ for group, values in groups:
 
     compositions.append(np.unique(values['composition'])[0])
     temperatures.append(np.unique(values['end_temperature'])[0])
-    volumes.append(xfit[index])
+    lengths.append(xfit[index])
 
     if save_plots:
         fig, ax = pl.subplots()
@@ -77,7 +78,7 @@ for group, values in groups:
                 label='Data'
                 )
 
-        ax.set_xlabel(r'Volumes $[\AA^{3}]$')
+        ax.set_xlabel(r'Cube Length $[\AA]$')
         ax.set_ylabel(r'Pressure $[kB]$')
 
         fig.savefig(join(save_plots, name))
@@ -86,7 +87,7 @@ for group, values in groups:
 df = {
       'composition': compositions,
       'temperature': temperatures,
-      'volume': volumes,
+      'cube_length': lengths,
       }
 
 df = pd.DataFrame(df)
