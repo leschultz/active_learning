@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Programs
+PYTHON=python3
+
+# Input paramters
+RUNS="[14.5, 15]"  # List of cubic lattice constants
+ELEMENTS="['Ca', 'Mg', 'Cu']"  # Elements
+NUMBERS="[55, 10, 35]"  # Number corresponding to each element
+COORDS="'../templates/poscar/256.txt'"  # Starting coordinates
+SAVE="'../runs/holds/Ca55Mg10Cu35/2000K/3ps'"  # Location to save POSCAR
+INCAR="'../templates/incar/temperature_2000K_3ps'"  # The VASP input file
+KPOINTS="'../templates/kpoints/M'"  # The VASP kpoints file
+POTCAR="'/home/leschultz/work/POTCARs/paw/LDA/5.4'"  # The VASP potential directory
+SUB="'../templates/submit/bardeen_yipeng.q'"  # The submit file
+
+cd ../../scripts
+${PYTHON} generate_hold_runs.py "${ELEMENTS}" "${NUMBERS}" "${COORDS}" "${SAVE}" "${RUNS}" "${INCAR}" "${KPOINTS}" "${POTCAR}" "${SUB}"
