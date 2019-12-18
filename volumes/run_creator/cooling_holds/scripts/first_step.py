@@ -19,6 +19,8 @@ coords = np.loadtxt(coords)  # Load starting coordinates
 coords = coords/coords.max(axis=0)  # Make fractional
 np.random.shuffle(coords)  # Randomize coordinates
 
+start_temp_str = str(start_temp)
+
 # Load the linear fits
 fits = pd.read_csv(fits)
 
@@ -50,7 +52,7 @@ for group, values in groups:
 
     length = m*start_temp+b
 
-    run = join(save, group)
+    run = join(*[save, group, start_temp_str])
 
     # Generates structure
     structure = functions.gen_cubic(
@@ -85,7 +87,7 @@ for group, values in groups:
 
     # Write INCAR file
     incar = incar_contents
-    incar = incar.replace('{temp}', str(start_temp))
+    incar = incar.replace('{temp}', start_temp_str)
     file_out = open(join(run, 'INCAR'), 'w')
     file_out.write(incar)
     file_out.close()

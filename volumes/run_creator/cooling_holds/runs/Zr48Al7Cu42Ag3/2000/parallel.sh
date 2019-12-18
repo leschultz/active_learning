@@ -4,7 +4,7 @@
 #$ -N parallel
 
 # Request the queue for this job (yipeng.q, morgan.q)
-#$ -q yipeng.q
+#$ -q morgan.q
 
 # Resources
 # yipeng.q: 2.22 GHz/core (up to 20 cores)
@@ -17,7 +17,7 @@
 #$ -cwd
 
 # Request processors saved as variable NSLOTS (replace <num> with up to 20 (yipeng.q) or 16 (morgan.q))
-#$ -pe intel-mpi 20
+#$ -pe intel-mpi 16
 
 # combine SGE standard output and error files
 #$ -o $JOB_NAME.o$JOB_ID

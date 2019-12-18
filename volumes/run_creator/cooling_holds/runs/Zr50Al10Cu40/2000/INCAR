@@ -22,8 +22,8 @@ MDALGO = 2        # The molecular dynamics simulation protocol.
 SMASS = 1         # Controls the velocities during ab-initio molecular dynamics run.
 POTIM = 3.0       # Time step fs.
 NSW = 1000        # The maximum number of ionic steps.
-TEBEG = 0    # Initial temperatures set by Maxwell-Boltzmann distribution. 
-TEEND = 0    # Ending temperature.
+TEBEG = 2000    # Initial temperatures set by Maxwell-Boltzmann distribution. 
+TEEND = 2000    # Ending temperature.
 
 ### Output part
 NWRITE = 1        # How much will be written to OUTCAR.
