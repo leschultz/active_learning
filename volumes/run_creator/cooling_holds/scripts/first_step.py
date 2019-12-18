@@ -1,18 +1,17 @@
 from shutil import copyfile
-
+from os.path import join
 import pandas as pd
 import numpy as np
 import functions
-import os
 import re
 
 # Input paramters
 coords = '../templates/poscar/256.txt'  # Starting coordinates
 save = '../runs'  # Location to save POSCAR
-incar = '../templates/incar/temperature_2000K_3ps'  # The VASP input file
+incar = '../templates/incar/hold'  # The VASP input file
 kpoints = '../templates/kpoints/M'  # The VASP kpoints file
 potcar = '/home/leschultz/work/POTCARs/paw/LDA/5.4'  # The VASP potential file
-submit = '../templates/submit/bardeen_yipeng.q'  # The cluster submit file
+submit = '../templates/submit/bardeen_morgan.q'  # The cluster submit file
 fits = '../../../tv_curves/data/data.csv'  # Data for linear fits
 start_temp = 2000  # The starting temperature
 
@@ -22,6 +21,11 @@ np.random.shuffle(coords)  # Randomize coordinates
 
 # Load the linear fits
 fits = pd.read_csv(fits)
+
+# Open and read template
+incar = open(incar)
+incar_contents = incar.read()
+incar.close()
 
 groups = fits.groupby(['composition'])
 
@@ -46,7 +50,7 @@ for group, values in groups:
 
     length = m*start_temp+b
 
-    run = os.path.join(save, group)
+    run = join(save, group)
 
     # Generates structure
     structure = functions.gen_cubic(
@@ -68,23 +72,29 @@ for group, values in groups:
         if i == 'Ca':
             i = 'Ca_sv'
 
-        pots.append(os.path.join(*[potcar, i, 'POTCAR']))
+        pots.append(join(*[potcar, i, 'POTCAR']))
 
     # Write run
     functions.create_dir(run)
 
     # Concat POTCARs and save
-    with open(os.path.join(run, 'POTCAR'), 'wb') as outfile:
+    with open(join(run, 'POTCAR'), 'wb') as outfile:
         for i in pots:
             with open(i, 'rb') as potfile:
                 outfile.write(potfile.read())
 
-    copyfile(incar, os.path.join(run, 'INCAR'))  # Save INCAR
-    copyfile(kpoints, os.path.join(run, 'KPOINTS'))  # Save KPOINTS
-    copyfile(submit, os.path.join(run, 'parallel.sh'))  # Save KPOINTS
+    # Write INCAR file
+    incar = incar_contents
+    incar = incar.replace('{temp}', str(start_temp))
+    file_out = open(join(run, 'INCAR'), 'w')
+    file_out.write(incar)
+    file_out.close()
+
+    copyfile(kpoints, join(run, 'KPOINTS'))  # Save KPOINTS
+    copyfile(submit, join(run, 'parallel.sh'))  # Save KPOINTS
 
     # Save POSCAR
-    structure.to(fmt='poscar', filename=os.path.join(run, 'POSCAR'))
+    structure.to(fmt='poscar', filename=join(run, 'POSCAR'))
 
     # Status update
     print('Generated ('+str(count)+'/'+total+')'+run)
