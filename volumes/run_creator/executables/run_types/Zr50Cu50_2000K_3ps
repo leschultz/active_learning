@@ -4,7 +4,7 @@
 PYTHON=python3
 
 # Input paramters
-RUNS="[10.5, 11, 11.5]"  # List of cubic lattice constants
+RUNS="[11.9, 12.1]"  # List of cubic lattice constants
 ELEMENTS="['Zr', 'Cu']"  # Elements
 NUMBERS="[50, 50]"  # Number corresponding to each element
 COORDS="'../templates/poscar/256.txt'"  # Starting coordinates

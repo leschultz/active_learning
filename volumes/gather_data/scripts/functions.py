@@ -1,4 +1,3 @@
-import pymatgen as mg
 import os
 
 
