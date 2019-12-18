@@ -1,40 +1,59 @@
-from ast import literal_eval
 from shutil import copyfile
 
+import pandas as pd
 import numpy as np
 import functions
-import sys
 import os
-
-sys.argv[1:] = [literal_eval(i) for i in sys.argv[1:]]  # Convert types
+import re
 
 # Input paramters
-elements = sys.argv[1]  # Elements
-numbers = sys.argv[2]  # Number corresponding to each element
-coords = sys.argv[3]  # Starting coordinates
-save = sys.argv[4]  # Location to save POSCAR
-runs = sys.argv[5]  # List of cubic lattice constants
-incar = sys.argv[6]  # The VASP input file
-kpoints = sys.argv[7]  # The VASP kpoints file
-potcar = sys.argv[8]  # The VASP potential file
-submit = sys.argv[9]  # The cluster submit file
+coords = '../templates/poscar/256.txt'  # Starting coordinates
+save = '../runs'  # Location to save POSCAR
+incar = '../templates/incar/temperature_2000K_3ps'  # The VASP input file
+kpoints = '../templates/kpoints/M'  # The VASP kpoints file
+potcar = '/home/leschultz/work/POTCARs/paw/LDA/5.4'  # The VASP potential file
+submit = '../templates/submit/bardeen_yipeng.q'  # The cluster submit file
+fits = '../../../tv_curves/data/data.csv'  # Data for linear fits
+start_temp = 2000  # The starting temperature
 
 coords = np.loadtxt(coords)  # Load starting coordinates
 coords = coords/coords.max(axis=0)  # Make fractional
 np.random.shuffle(coords)  # Randomize coordinates
 
-# Generate runs
+# Load the linear fits
+fits = pd.read_csv(fits)
+
+groups = fits.groupby(['composition'])
+
 count = 1
-total = str(len(runs))
-for number in runs:
-    run = os.path.join(save, str(number))
+total = str(fits.shape[0])
+for group, values in groups:
+
+    i = re.split('(\d+)', group)
+    i = [j for j in i if j != '']
+
+    for j in range(len(i)):
+        try:
+            i[j] = int(i[j])
+        except Exception:
+            pass
+
+    numbers = [j for j in i if isinstance(j, int)]
+    elements = [j for j in i if isinstance(j, str)]
+
+    m = values['slope'].values[0]
+    b = values['intercept'].values[0]
+
+    length = m*start_temp+b
+
+    run = os.path.join(save, group)
 
     # Generates structure
     structure = functions.gen_cubic(
                                     elements,
                                     numbers,
                                     coords,
-                                    number,
+                                    length,
                                     )
 
     # Find matching POTCARS
