@@ -68,6 +68,7 @@ for group, values in groups:
                 xfit[index],
                 yfit[index],
                 marker='8',
+                linestyle='none',
                 label='Zero Pressure',
                 )
         ax.plot(
@@ -80,6 +81,8 @@ for group, values in groups:
 
         ax.set_xlabel(r'Cube Length $[\AA]$')
         ax.set_ylabel(r'Pressure $[kB]$')
+
+        ax.legend()
 
         fig.savefig(join(save_plots, name))
         pl.close('all')

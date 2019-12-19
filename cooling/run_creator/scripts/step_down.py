@@ -28,7 +28,7 @@ submit = (
 fits = (
         '/home/leschultz/work/vasp_runs'
         '/volumes/tv_curves/data/data.csv'
-        )# Data for linear fits
+        )  # Data for linear fits
 dT = sys.argv[1]  # Change in temperature
 min_temp = sys.argv[2]  # The minimum allowable temperature hold
 
