@@ -1,3 +1,4 @@
+from pymatgen import Lattice, Structure
 from ast import literal_eval
 from shutil import copyfile
 import pymatgen as mg
@@ -62,10 +63,8 @@ if temp >= min_temp:
     b = fit[2]
 
     # Change volume
-    structure = mg.Structure.from_file(contcar)
-    structure._lattice = mg.Lattice.cubic(m*temp+b)
-    print(structure._lattice)
-    print(structure)
+    structure = Structure.from_file(contcar)
+    structure.lattice = Lattice.cubic(m*temp+b)
 
     # Open and read template
     incar = open(incar)
@@ -85,9 +84,3 @@ if temp >= min_temp:
     copyfile(submit, os.path.join(dir_name, 'parallel.sh'))
 
     os.chdir(dir_name)  # Change working directory
-
-    # Submit new hold
-    subprocess.run(
-                   'qsub parallel.sh', cwd=dir_name,
-                   stdout=open(os.devnull, 'wb')
-                   )

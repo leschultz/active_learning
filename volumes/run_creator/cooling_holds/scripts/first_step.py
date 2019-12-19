@@ -13,7 +13,7 @@ kpoints = '../templates/kpoints/M'  # The VASP kpoints file
 potcar = '/home/leschultz/work/POTCARs/paw/LDA/5.4'  # The VASP potential file
 submit = '../templates/submit/bardeen_morgan.q'  # The cluster submit file
 fits = '../../../tv_curves/data/data.csv'  # Data for linear fits
-start_temp = 2000  # The starting temperature
+start_temp = 2000.0  # The starting temperature
 
 coords = np.loadtxt(coords)  # Load starting coordinates
 coords = coords/coords.max(axis=0)  # Make fractional
