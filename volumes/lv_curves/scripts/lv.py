@@ -26,6 +26,8 @@ functions.create_dir(save_plots)
 compositions = []
 temperatures = []
 lengths = []
+length_errors = []
+pressures = []
 
 for group, values in groups:
     name = str(group)
@@ -39,8 +41,8 @@ for group, values in groups:
         if y[i] <= 0:
             break
 
-    pos = i-1
-    neg = i
+    pos = i-1  # Positive pressure
+    neg = i  # Negative pressure
 
     xnew = [x[neg], x[pos]]
     ynew = [y[neg], y[pos]]
@@ -55,6 +57,8 @@ for group, values in groups:
     compositions.append(np.unique(values['composition'])[0])
     temperatures.append(np.unique(values['end_temperature'])[0])
     lengths.append(xfit[index])
+    length_errors.append(x[neg]-x[pos])
+    pressures.append(yfit[index])
 
     if save_plots:
         fig, ax = pl.subplots()
@@ -91,6 +95,8 @@ df = {
       'composition': compositions,
       'temperature': temperatures,
       'cube_length': lengths,
+      'cube_length_error': length_errors,
+      'pressure': pressures,
       }
 
 df = pd.DataFrame(df)
