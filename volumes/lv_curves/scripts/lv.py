@@ -8,7 +8,7 @@ import functions
 
 # Input parameters
 df = '../../gather_data/data/data.csv'  # Path to data file
-density = 10000  # The number of points to use in fit
+density = 100000  # The number of points to use in fit
 data_save_dir = '../data'  # The data save folder
 data_save_name = 'data.csv'  # The data save name
 save_plots = '../figures'  # The figures save folder
@@ -57,7 +57,7 @@ for group, values in groups:
     compositions.append(np.unique(values['composition'])[0])
     temperatures.append(np.unique(values['end_temperature'])[0])
     lengths.append(xfit[index])
-    length_errors.append(x[neg]-x[pos])
+    length_errors.append(min(abs(xnew-xfit[index])))
     pressures.append(yfit[index])
 
     if save_plots:
