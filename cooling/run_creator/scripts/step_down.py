@@ -14,21 +14,9 @@ sys.argv[1:] = [literal_eval(i) for i in sys.argv[1:]]  # Convert types
 contcar = 'CONTCAR'  # The CONTCAR file
 kpoints = 'KPOINTS'  # The KPOINTS file
 potcar = 'POTCAR'  # The POTCAR file
-incar = (
-         '/home/leschultz/work'
-         '/vasp_runs/volumes/run_creator'
-         '/cooling_holds/templates/incar/hold'
-         )  # The VASP input file
-submit = (
-         '/home/leschultz/work'
-         '/vasp_runs/volumes/run_creator'
-         '/cooling_holds'
-         '/templates/submit/bardeen_morgan.q'
-         )  # The cluster submit file
-fits = (
-        '/home/leschultz/work/vasp_runs'
-        '/volumes/tv_curves/data/data.csv'
-        )  # Data for linear fits
+incar = '../../../templates/incar/hold'  # The VASP input file
+submit = '../../../templates/submit/bardeen_morgan.q'  # The submit file
+fits = '../../../data_input/tv/data.csv'  # Data for linear fits
 dT = sys.argv[1]  # Change in temperature
 min_temp = sys.argv[2]  # The minimum allowable temperature hold
 
