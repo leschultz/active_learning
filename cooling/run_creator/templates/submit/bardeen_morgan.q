@@ -7,8 +7,8 @@
 #$ -q morgan.q
 
 # Resources
-# yipeng.q: 2.22 GHz/core (up to 20 cores)
-# morgan.q: 2.73 GHz/core (up to 16 cores) 
+# yipeng.q: 2.2 GHz/core (up to 20 cores)
+# morgan.q: 2.5 GHz/core (up to 16 cores) 
 
 # Request up to 48 hours (yipeng.q) or 168 hours (morgan.q) of wall time (hh:mm:ss)
 #$ -l h_rt=336:00:00
