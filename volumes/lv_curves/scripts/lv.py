@@ -27,7 +27,7 @@ compositions = []
 temperatures = []
 lengths = []
 length_errors = []
-pressures = []
+pressure_errors = []
 
 for group, values in groups:
     name = str(group)
@@ -58,7 +58,7 @@ for group, values in groups:
     temperatures.append(np.unique(values['end_temperature'])[0])
     lengths.append(xfit[index])
     length_errors.append(min(abs(xnew-xfit[index])))
-    pressures.append(yfit[index])
+    pressure_errors.append(min(abs(ynew-xfit[index])))
 
     if save_plots:
         fig, ax = pl.subplots()
@@ -96,7 +96,7 @@ df = {
       'temperature': temperatures,
       'cube_length': lengths,
       'cube_length_error': length_errors,
-      'pressure': pressures,
+      'pressure_error': pressure_errors,
       }
 
 df = pd.DataFrame(df)
