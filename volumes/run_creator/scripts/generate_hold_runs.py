@@ -6,6 +6,48 @@ import functions
 import sys
 import os
 
+
+# Recomended potentials
+recomended_sv = {
+                 'Zr',
+                 'Ca',
+                 'Nb',
+                 'K',
+                 'Sc',
+                 'Ti',
+                 'V',
+                 'Rb',
+                 'Sr',
+                 'Y',
+                 'Mo',
+                 'Cs',
+                 'Ba',
+                 'Fr',
+                 'Ra'
+                 }
+recomended_pv = {
+                 'Na',
+                 'Cr',
+                 'Tc',
+                 'Ru',
+                 'Mn',
+                 'Rh',
+                 'Hf',
+                 'Ta',
+                 'W'
+                 }
+recomended_d = {
+                'Sn',
+                'Ga',
+                'Ge',
+                'In',
+                'Tl',
+                'Pb',
+                'Bi',
+                'Po',
+                'At'
+                }
+
 sys.argv[1:] = [literal_eval(i) for i in sys.argv[1:]]  # Convert types
 
 # Input paramters
@@ -41,13 +83,14 @@ for number in runs:
     pots = []
     for i in elements:
 
-        # Missing Zr potential
-        if i == 'Zr':
-            i = 'Zr_sv'
+        if i in recomended_sv:
+            i += '_sv'
 
-        # Missing Ca potential
-        if i == 'Ca':
-            i = 'Ca_sv'
+        if i in recomended_pv:
+            i += '_pv'
+
+        if i in recomended_d:
+            i += '_d'
 
         pots.append(os.path.join(*[potcar, i, 'POTCAR']))
 
