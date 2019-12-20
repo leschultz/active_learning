@@ -19,9 +19,17 @@ for i in comp:
         n.append(int(i))
 
     except Exception:
+        el = Element(i)
+        rad = [
+               el.atomic_radius,
+               el.average_anionic_radius,
+               el.average_cationic_radius,
+               el.average_ionic_radius,
+               el.metallic_radius,
+               ]
+
         e.append(i)
-        i = Element(i)
-        r.append(i.atomic_radius)
+        r.append(max(rad))  # Maximum radius
 
 r = np.array(r)
 v = 4/3*np.pi*r**3
