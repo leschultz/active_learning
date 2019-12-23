@@ -6,20 +6,19 @@ import functions
 import re
 
 # Input paramters
-coords = '../templates/poscar/256.txt'  # Starting coordinates
+coords = '../templates/poscar/365.txt'  # Starting coordinates
 save = '../runs'  # Location to save POSCAR
 incar = '../templates/incar/hold'  # The VASP input file
 kpoints = '../templates/kpoints/M'  # The VASP kpoints file
 potcar = '/home/leschultz/work/POTCARs/paw/LDA/5.4'  # The VASP potential file
 submit = '../templates/submit/bardeen_morgan.q'  # The cluster submit file
-fits = '../data_input/tv/data.csv'  # Data for linear fits
+fits = '../data_input/data.csv'  # Data for linear fits
 start_temp = 2000.0  # The starting temperature
+
+start_temp_str = str(start_temp)
 
 coords = np.loadtxt(coords)  # Load starting coordinates
 coords = coords/coords.max(axis=0)  # Make fractional
-np.random.shuffle(coords)  # Randomize coordinates
-
-start_temp_str = str(start_temp)
 
 # Load the linear fits
 fits = pd.read_csv(fits)
@@ -46,6 +45,9 @@ for group, values in groups:
 
     numbers = [j for j in i if isinstance(j, int)]
     elements = [j for j in i if isinstance(j, str)]
+
+    new_coords = coords[:sum(numbers), :]  # The first n atoms
+    np.random.shuffle(new_coords)  # Randomize coordinates
 
     m = values['slope'].values[0]
     b = values['intercept'].values[0]
