@@ -4,20 +4,15 @@ This tool aids in the production of standard Ab-Initio Molecular Dyanmics (AIMD)
 
 ## Running
 
-Under each main working directory, there are general directories containing the following: executables containing bash files that provide input arguments to python scripts when applicable, scripts containing analysis scripts that may have some input parameters within, and data where data is saved. The structure is as follows:
+Under each main working directory, there are general directories containing the following: executables containing bash files that provide input arguments to python scripts when applicable, scripts containing analysis scripts that may have some input parameters within, data where data is saved, templates where file templates are used to create runs, and figures where figures are saved. The structure is as follows:
 
-'''
-./
+```
+./vasp_runs
 ├── cooling
 │   └── run_creator
 │       ├── data_input
 │       ├── executables
 │       ├── scripts
-│       │   ├── first_step.py
-│       │   ├── functions.py
-│       │   ├── __pycache__
-│       │   │   └── functions.cpython-36.pyc
-│       │   └── step_down.py
 │       └── templates
 │           ├── incar
 │           ├── kpoints
@@ -53,7 +48,7 @@ Under each main working directory, there are general directories containing the 
     │   ├── figures
     │   └── scripts
     └── volume_guesser
-'''
+```
 
 ## Coding Style
 
