@@ -62,6 +62,7 @@ potcar = sys.argv[8]  # The VASP potential file
 submit = sys.argv[9]  # The cluster submit file
 
 coords = np.loadtxt(coords)  # Load starting coordinates
+coords = coords[:sum(numbers), :]  # The first n atoms
 coords = coords/coords.max(axis=0)  # Make fractional
 np.random.shuffle(coords)  # Randomize coordinates
 
