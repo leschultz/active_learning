@@ -1,5 +1,4 @@
 from matplotlib import pyplot as pl
-from scipy.optimize import curve_fit
 from scipy.stats import linregress
 from os.path import join
 import pandas as pd
