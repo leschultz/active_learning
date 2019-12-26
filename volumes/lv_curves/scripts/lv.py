@@ -1,3 +1,4 @@
+from scipy.interpolate import interp1d
 from matplotlib import pyplot as pl
 from scipy.stats import linregress
 from os.path import join
@@ -48,8 +49,12 @@ for group, values in groups:
 
     m, b, r, p, std = linregress(xnew, ynew)
 
-    xfit = np.linspace(min(xnew), max(xnew), density)
+    xfit = np.linspace(min(x), max(x), density)
     yfit = np.array(list(map(lambda x: m*x+b, xfit)))
+
+    order = 3
+    f2 = interp1d(x, y, kind=order)
+    yfit = f2(xfit)
 
     index = functions.nearest(0, yfit)
 
@@ -65,7 +70,7 @@ for group, values in groups:
         ax.plot(
                 xfit,
                 yfit,
-                label='Extrapolation'
+                label='Spline Order '+str(order)
                 )
         ax.plot(
                 xfit[index],
