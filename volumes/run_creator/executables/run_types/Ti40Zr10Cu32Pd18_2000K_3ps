@@ -4,11 +4,11 @@
 PYTHON=python3
 
 # Input paramters
-RUNS="[11.40018162, 12.40608, 13.41197838, 14.41787676, 15.42377514]"  # List of cubic lattice constants
-ELEMENTS="['Ca', 'Mg', 'Cu']"  # Elements
-NUMBERS="[55, 25, 20]"  # Number corresponding to each element
+RUNS="[9.11339429, 9.91751732, 10.72164035, 11.52576337, 12.3298864]"  # List of cubic lattice constants
+ELEMENTS="['Ti', 'Zr', 'Cu', 'Pd']"  # Elements
+NUMBERS="[40, 10, 32, 18]"  # Number corresponding to each element
 COORDS="'../templates/poscar/365.txt'"  # Starting coordinates
-SAVE="'../runs/holds/Ca55Mg25Cu20/2000K/3ps'"  # Location to save POSCAR
+SAVE="'../runs/holds/Ti40Zr10Cu32Pd18/2000K/3ps'"  # Location to save POSCAR
 INCAR="'../templates/incar/temperature_2000K_3ps'"  # The VASP input file
 KPOINTS="'../templates/kpoints/M'"  # The VASP kpoints file
 POTCAR="'/home/leschultz/work/POTCARs/paw/LDA/5.4'"  # The VASP potential directory
