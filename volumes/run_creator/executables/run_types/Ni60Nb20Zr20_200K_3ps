@@ -4,15 +4,15 @@
 PYTHON=python3
 
 # Input paramters
-RUNS="[11.1, 11.2, 11.3, 11.4]"  # List of cubic lattice constants
-ELEMENTS="['Ti', 'Zr', 'Cu', 'Pd']"  # Elements
-NUMBERS="[40, 10, 32, 18]"  # Number corresponding to each element
+RUNS="[11.1, 11.2, 11.3, 11.4, 11.5]"  # List of cubic lattice constants
+ELEMENTS="['Ni', 'Nb', 'Zr']"  # Elements
+NUMBERS="[60, 20, 20]"  # Number corresponding to each element
 COORDS="'../templates/poscar/365.txt'"  # Starting coordinates
-SAVE="'../runs/holds/Ti40Zr10Cu32Pd18/200K/3ps'"  # Location to save POSCAR
+SAVE="'../runs/holds/Ni60Nb20Zr20/200K/3ps'"  # Location to save POSCAR
 INCAR="'../templates/incar/temperature_200K_3ps'"  # The VASP input file
 KPOINTS="'../templates/kpoints/M'"  # The VASP kpoints file
 POTCAR="'/home/leschultz/work/POTCARs/paw/LDA/5.4'"  # The VASP potential directory
-SUB="'../templates/submit/bardeen_morgan.q'"  # The submit file
+SUB="'../templates/submit/bardeen_yipeng.q'"  # The submit file
 
 cd ../../scripts
 ${PYTHON} generate_hold_runs.py "${ELEMENTS}" "${NUMBERS}" "${COORDS}" "${SAVE}" "${RUNS}" "${INCAR}" "${KPOINTS}" "${POTCAR}" "${SUB}"
