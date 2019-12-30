@@ -3,6 +3,7 @@ import iterators
 import functions
 
 # Input paramters
+out_print = 'out.txt'  # The VASP print to screen file
 incar = 'INCAR'  # INCAR file
 poscar = 'POSCAR'  # POSCAR file
 outcar = 'OUTCAR'  # OUTCAR file
@@ -25,6 +26,7 @@ functions.create_dir(save_plots)
 # Iterate for every run
 df = iterators.iterate(
                        paths,
+                       out_print,
                        incar,
                        poscar,
                        outcar,

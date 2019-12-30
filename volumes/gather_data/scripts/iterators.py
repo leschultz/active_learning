@@ -9,12 +9,21 @@ import parsers
 pl.rcParams["figure.figsize"] = [8, 6]  # Define plot size
 
 
-def analysis(path, incar, poscar, outcar, fraction, save_plots=False):
+def analysis(
+             path,
+             out_print,
+             incar,
+             poscar,
+             outcar,
+             fraction,
+             save_plots=False
+             ):
     '''
     The analysis for a run.
 
     inputs:
         path = Path to run.
+        out_print = The VASP print to screen file.
         incar = The INCAR file.
         poscar = The POSCAR file.
         outcar = The OUTCAR file.
@@ -29,6 +38,9 @@ def analysis(path, incar, poscar, outcar, fraction, save_plots=False):
         start_temp = The starting temperature defined in INCAR.
         end_temp = The ending temperature defined in INCAR.
     '''
+
+    # Check if the run has any errors
+    error = parsers.output(join(path, out_print))
 
     # INCAR parameters
     params = parsers.incar(join(path, incar))
@@ -109,6 +121,12 @@ def analysis(path, incar, poscar, outcar, fraction, save_plots=False):
 
         pl.close('all')
 
+    # If there is an error, use none of the paresd values
+    if error:
+        volume = np.nan
+        pressure = np.nan
+        temperature = np.nan
+
     return comp, volume, pressure, temperature, start_temp, end_temp
 
 
@@ -128,7 +146,6 @@ def iterate(paths, *args, **kwargs):
     volumes = []
     pressures = []
     temperatures = []
-    etots = []
     temp_is = []
     temp_fs = []
 

@@ -12,9 +12,11 @@ density = 100000  # The number of points to use in fit
 data_save_dir = '../data'  # The data save folder
 data_save_name = 'data.csv'  # The data save name
 save_plots = '../figures'  # The figures save folder
+order = 3  # The order of the spline fit
 
 # Load Data
 df = pd.read_csv(df)
+df = df.dropna()  # Drop bad jobs
 df = df.sort_values(by=['volume', 'start_temperature', 'end_temperature'])
 
 # Group data
@@ -47,30 +49,47 @@ for group, values in groups:
     xnew = [x[neg], x[pos]]
     ynew = [y[neg], y[pos]]
 
-    m, b, r, p, std = linregress(xnew, ynew)
-
     xfit = np.linspace(min(x), max(x), density)
-    yfit = np.array(list(map(lambda x: m*x+b, xfit)))
 
-    order = 3
-    f2 = interp1d(x, y, kind=order)
-    yfit = f2(xfit)
+    # Attempt spline
+    spline_fail = False
+    try:
 
-    index = functions.nearest(0, yfit)
+        f2 = interp1d(x, y, kind=order)
+        yfit = f2(xfit)
 
-    compositions.append(np.unique(values['composition'])[0])
-    temperatures.append(np.unique(values['end_temperature'])[0])
-    lengths.append(xfit[index])
+        index = functions.nearest(0, yfit)
+        lengths.append(xfit[index])
+
+    except Exception:
+        spline_fail = True
+
+        m, b, r, p, std = linregress(xnew, ynew)
+        yfit = np.array(list(map(lambda x: m*x+b, xfit)))
+
+        index = functions.nearest(0, yfit)
+        lengths.append(xfit[index])
+
     length_errors.append(min(abs(xnew-xfit[index])))
     pressure_errors.append(min(abs(ynew-xfit[index])))
 
+    compositions.append(np.unique(values['composition'])[0])
+    temperatures.append(np.unique(values['end_temperature'])[0])
+
     if save_plots:
+
+        if spline_fail:
+            label = '('+str(m)+')x+('+str(b)+')'
+
+        else:
+            label = 'Spline Order '+str(order)
+
         fig, ax = pl.subplots()
 
         ax.plot(
                 xfit,
                 yfit,
-                label='Spline Order '+str(order)
+                label=label
                 )
         ax.plot(
                 xfit[index],
