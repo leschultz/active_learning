@@ -23,10 +23,6 @@ df = df.loc[df['start_temperature'] == df['end_temperature']]
 # Sort by temperature
 df = df.sort_values(by=['end_temperature'])
 
-# Parse the number of atoms
-df['atoms'] = df['composition'].apply(lambda x: re.split('(\d+)', x))
-df['atoms'] = df['atoms'].apply(lambda x: sum([int(i) for i in x if i.isdigit()]))
-
 # Energy normalized by atoms
 df['total_energy/atoms'] = df['total_energy']/df['atoms']
 
@@ -50,7 +46,7 @@ for group, values in groups:
     f = interp1d(x, y, kind=order)  # Linear interpolation
 
     xfit = np.linspace(min(x), max(x), density)
-    yfit = f(xfit)    
+    yfit = f(xfit)
 
     xcut, endpoints, middle_rmse = opt(xfit, yfit)
 
@@ -94,7 +90,7 @@ for group, values in groups:
 
         fig.tight_layout()
         fig.savefig(save_name+'_tg.png')
-        
+
         # Plot error curve
         fig, ax = pl.subplots()
 

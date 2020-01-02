@@ -105,8 +105,8 @@ def analysis(
                       )
 
         ax[0].set_ylabel(r'Volume $[\AA^{3}]$')
-        ax[1].set_ylabel(r'Pressure $[\AA^{3}]$')
-        ax[2].set_ylabel(r'Temperature $[\AA^{3}]$')
+        ax[1].set_ylabel(r'Pressure $[kB]$')
+        ax[2].set_ylabel(r'Temperature $[K]$')
         ax[3].set_ylabel(r'Total Energy $[eV]$')
 
         for i in range(n):

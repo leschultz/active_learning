@@ -66,6 +66,10 @@ def analysis(
     # OUTCAR paramters
     comp, vol, press, temp, etot = parsers.outcar(join(path, outcar))
 
+    # Count atoms from composition
+    atoms = re.split('(\d+)', comp)
+    atoms = sum([int(i) for i in atoms if i.isdigit()])
+
     # Find minium data length because of runs stopping abruptly
     cut = min(map(len, [vol, press, temp, etot]))
     vol = vol[:cut]
@@ -144,8 +148,8 @@ def analysis(
                       )
 
         ax[0].set_ylabel(r'Volume $[\AA^{3}]$')
-        ax[1].set_ylabel(r'Pressure $[\AA^{3}]$')
-        ax[2].set_ylabel(r'Temperature $[\AA^{3}]$')
+        ax[1].set_ylabel(r'Pressure $[kB]$')
+        ax[2].set_ylabel(r'Temperature $[K]$')
         ax[3].set_ylabel(r'Total Energy $[eV]$')
 
         for i in range(n):
@@ -215,7 +219,7 @@ def analysis(
         etotal = np.nan
         diff = np.nan
 
-    return comp, volume, pressure, temperature, etotal, start_temp, end_temp, diff
+    return comp, volume, pressure, temperature, etotal, start_temp, end_temp, diff, atoms
 
 
 def iterate(paths, *args, **kwargs):
@@ -238,6 +242,7 @@ def iterate(paths, *args, **kwargs):
     temp_is = []
     temp_fs = []
     diffs = []
+    atoms = []
 
     counts = str(len(paths))
     count = 1
@@ -258,6 +263,7 @@ def iterate(paths, *args, **kwargs):
         temp_is.append(out[5])
         temp_fs.append(out[6])
         diffs.append(out[7])
+        atoms.append(out[8])
 
         count += 1
 
@@ -270,7 +276,8 @@ def iterate(paths, *args, **kwargs):
           'total_energy': etots,
           'start_temperature': temp_is,
           'end_temperature': temp_fs,
-          'self_diffusion': diffs
+          'self_diffusion': diffs,
+          'atoms': atoms,
           }
 
     df = pd.DataFrame(df)
