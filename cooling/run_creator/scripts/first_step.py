@@ -7,7 +7,7 @@ import re
 
 # Input paramters
 coords = '../templates/poscar/365.txt'  # Starting coordinates
-save = '../runs'  # Location to save POSCAR
+save = '../../runs'  # Location to save POSCAR
 incar = '../templates/incar/hold'  # The VASP input file
 kpoints = '../templates/kpoints/M'  # The VASP kpoints file
 potcar = '/home/leschultz/work/POTCARs/paw/LDA/5.4'  # The VASP potential file

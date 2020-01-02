@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR="../runs"  # The parent directory of runs
+DIR="../../runs"  # The parent directory of runs
 SUB="parallel.sh"  # The submit file
 SUBMITTER="qsub"  # The scheduler submit command
 
