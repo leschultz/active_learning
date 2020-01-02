@@ -152,3 +152,46 @@ def outcar(path):
         total_energy[:] = np.nan
 
     return composition, volumes, pressures, temperatures, total_energy
+
+
+def oszicar(path):
+    '''
+    Parse OSZICAR file.
+
+    inputs:
+        path = The file path.
+
+    outputs:
+        T = The temperature.
+        E = The total free energy.
+        F = The total free energy (no kinetic contribution).
+        E0 = The energy for sigma -> 0.
+        EK = The kinetic energy.
+        SP = The potential energy of the Nose thermostat.
+        SK = The kinetic energy of the Nose thermostat.
+    '''
+
+    T = []
+    E = []
+    F = []
+    E0 = []
+    EK = []
+    SP = []
+    SK = []
+
+    with open(path) as f:
+        for line in f:
+            line = line.strip().split(' ')
+            line = [i for i in line if i != '']
+
+            if 'T=' in line:
+
+                T.append(float(line[2]))
+                E.append(float(line[4]))
+                F.append(float(line[6]))
+                E0.append(float(line[8]))
+                EK.append(float(line[10]))
+                SP.append(float(line[12]))
+                SK.append(float(line[14]))
+
+    return T, E, F, E0, EK, SP, SK

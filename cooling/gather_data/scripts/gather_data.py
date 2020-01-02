@@ -8,6 +8,7 @@ incar = 'INCAR'  # INCAR file
 poscar = 'POSCAR'  # POSCAR file
 outcar = 'OUTCAR'  # OUTCAR file
 xdatcar = 'XDATCAR'  # XDATCAR file
+oszicar = 'OSZICAR'  # OSZICAR file
 vol_dir = '../../run_sets'  # Run directory
 fraction = 0.5  # The fraction of hold data to average
 data_save_dir = '../data'  # The data save folder
@@ -32,6 +33,7 @@ df = iterators.iterate(
                        poscar,
                        outcar,
                        xdatcar,
+                       oszicar,
                        fraction,
                        save_plots,
                        )

@@ -26,6 +26,7 @@ def analysis(
              poscar,
              outcar,
              xdatcar,
+             oszicar,
              fraction,
              save_plots=False
              ):
@@ -39,6 +40,7 @@ def analysis(
         poscar = The POSCAR file.
         outcar = The OUTCAR file.
         xdatcar = The XDATCAR file.
+        oszicar = The OSZICAR file.
         fraction = The amount of data to average.
         save_plots = Whether to save analysis plots.
 
@@ -69,6 +71,11 @@ def analysis(
     # Count atoms from composition
     atoms = re.split('(\d+)', comp)
     atoms = sum([int(i) for i in atoms if i.isdigit()])
+
+    # OSZICAR parameters
+    T, E, F, E0, EK, SP, SK = parsers.oszicar(join(path, oszicar))
+
+    etot = E  # Use the energy values from OSZICAR instead
 
     # Find minium data length because of runs stopping abruptly
     cut = min(map(len, [vol, press, temp, etot]))
