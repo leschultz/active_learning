@@ -10,26 +10,37 @@ n_tests = int(sys.argv[3])  # The number of points to test
 comp = re.split('(\d+)', comp)
 comp = [i for i in comp if i != '']
 
-e = []
-n = []
+n = [int(i) for i in comp if i.isdigit()]
+e = [i for i in comp if not i.isdigit()]
 r = []
 
-for i in comp:
+for i in e:
+    el = Element(i)
+    rad = []
+
+    # Gather applicable radii
     try:
-        n.append(int(i))
-
+        rad.append(el.atomic_radius)
     except Exception:
-        el = Element(i)
-        rad = [
-               el.atomic_radius,
-               el.average_anionic_radius,
-               el.average_cationic_radius,
-               el.average_ionic_radius,
-               el.metallic_radius,
-               ]
+        pass
+    try:
+        rad.append(el.average_anionic_radius)
+    except Exception:
+        pass
+    try:
+        rad.append(el.average_cationic_radius)
+    except Exception:
+        pass
+    try:
+        rad.append(el.average_ionic_radius)
+    except Exception:
+        pass
+    try:
+        rad.append(el.metallic_radius)
+    except Exception:
+        pass
 
-        e.append(i)
-        r.append(max(rad))  # Maximum radius
+    r.append(max(rad))  # Maximum radius
 
 r = np.array(r)
 v = 4/3*np.pi*r**3
