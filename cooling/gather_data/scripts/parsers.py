@@ -132,8 +132,8 @@ def outcar(path):
                 if '(temperature' in line:
                     df[iteration]['temperature'] = float(line[5])
 
-                if ('free' in line) and ('TOTEN' in line):
-                    df[iteration]['total_energy'] = float(line[4])
+                if 'energy(sigma->0)' in line:
+                    df[iteration]['total_energy'] = float(line[-1])
 
     # Create dataframe
     df = pd.DataFrame(df).T
