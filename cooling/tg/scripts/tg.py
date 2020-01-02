@@ -40,8 +40,8 @@ for group, values in groups:
 
     print(group)
 
-    x = values['end_temperature']
-    y = df['E-3kT']
+    x = values['end_temperature'][:-1]
+    y = values['E-3kT'][:-1]
 
     f = interp1d(x, y, kind=order)  # Linear interpolation
 
