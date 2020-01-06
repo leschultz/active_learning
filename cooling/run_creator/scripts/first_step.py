@@ -60,7 +60,6 @@ for group, values in groups:
     structure = functions.gen_cubic(
                                     elements,
                                     numbers,
-                                    coords,
                                     length,
                                     )
 

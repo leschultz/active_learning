@@ -1,4 +1,6 @@
-import pymatgen as mg
+from pymatgen import Lattice, Structure
+from math import ceil
+import numpy as np
 import os
 
 
@@ -40,28 +42,36 @@ def finder(name, source):
     return paths
 
 
-def gen_cubic(elements, numbers, coords, a):
+def gen_cubic(elements, numbers, l):
     '''
-    Generate a cubic supercell.
+    Create a cubic structure.
 
     inputs:
-        elements = List of elements.
-        numbers = The number of atoms for each element.
-        coords = Starting coordinates.
-        a = Cubic lattice paramter.
+        elements = A list of elements.
+        numbers = The number of species for each element.
 
     outputs:
-        structure = Pymatgen structure object.
+        l = The length for the sides of the cubic volume.
     '''
 
-    # Assign species for each coordinate
-    species = []
-    for i in range(len(elements)):
-        species += [elements[i]]*numbers[i]
+    atoms = sum(numbers)  # The number of atoms
 
-    coords = coords[:len(species)]  # Remove left over coordinates
+    # Element type for each coordinate
+    e = []
+    for i, j in zip(elements, numbers):
+        e += [i]*j
 
-    lattice = mg.Lattice.cubic(a)  # Generate cubic lattice
-    structure = mg.Structure(lattice, species, coords)  # Generate structure
+    # Make starting structure
+    n = ceil(atoms**(1/3))
+    lattice = Lattice.cubic(l)
+    structure = Structure(lattice, [elements[0]], [[0, 0, 0]])
+    structure.make_supercell([n, n, n])
+
+    # Truncate and shuffle coordinates
+    coords = structure.frac_coords[:atoms]
+    np.random.shuffle(coords)
+
+    # Generate and save structure
+    structure = Structure(lattice, e, coords)
 
     return structure
