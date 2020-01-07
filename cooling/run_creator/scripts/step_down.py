@@ -52,7 +52,7 @@ if temp >= min_temp:
 
     # Change volume
     structure = Structure.from_file(contcar)
-    structure.lattice = Lattice.cubic(m*temp+b)
+    structure.lattice = Lattice.cubic((m*temp+b)**(1/3))
 
     # Open and read template
     incar = open(incar)

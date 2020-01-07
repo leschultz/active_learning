@@ -111,6 +111,8 @@ for group, values in groups:
 
         ax.legend()
 
+        fig.tight_layout()
+
         fig.savefig(join(save_plots, name))
         pl.close('all')
 

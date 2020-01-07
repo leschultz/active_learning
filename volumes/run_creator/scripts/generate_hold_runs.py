@@ -6,7 +6,6 @@ import functions
 import sys
 import os
 
-
 # Recomended potentials
 recomended_sv = {
                  'Zr',

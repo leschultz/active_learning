@@ -15,6 +15,48 @@ submit = '../templates/submit/bardeen_morgan.q'  # The cluster submit file
 fits = '../data_input/data.csv'  # Data for linear fits
 start_temp = 2000.0  # The starting temperature
 
+# Recomended potentials
+recomended_sv = {
+                 'Zr',
+                 'Li',
+                 'Ca',
+                 'Nb',
+                 'K',
+                 'Sc',
+                 'Ti',
+                 'V',
+                 'Rb',
+                 'Sr',
+                 'Y',
+                 'Mo',
+                 'Cs',
+                 'Ba',
+                 'Fr',
+                 'Ra'
+                 }
+recomended_pv = {
+                 'Na',
+                 'Cr',
+                 'Tc',
+                 'Ru',
+                 'Mn',
+                 'Rh',
+                 'Hf',
+                 'Ta',
+                 'W'
+                 }
+recomended_d = {
+                'Sn',
+                'Ga',
+                'Ge',
+                'In',
+                'Tl',
+                'Pb',
+                'Bi',
+                'Po',
+                'At'
+                }
+
 start_temp_str = str(start_temp)
 
 coords = np.loadtxt(coords)  # Load starting coordinates
@@ -52,7 +94,7 @@ for group, values in groups:
     m = values['slope'].values[0]
     b = values['intercept'].values[0]
 
-    length = m*start_temp+b
+    length = (m*start_temp+b)**(1/3)
 
     run = join(*[save, group, start_temp_str])
 
@@ -67,13 +109,14 @@ for group, values in groups:
     pots = []
     for i in elements:
 
-        # Missing Zr potential
-        if i == 'Zr':
-            i = 'Zr_sv'
+        if i in recomended_sv:
+            i += '_sv'
 
-        # Missing Ca potential
-        if i == 'Ca':
-            i = 'Ca_sv'
+        if i in recomended_pv:
+            i += '_pv'
+
+        if i in recomended_d:
+            i += '_d'
 
         pots.append(join(*[potcar, i, 'POTCAR']))
 

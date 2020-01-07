@@ -29,7 +29,7 @@ for group, values in groups:
     print('Grouped by: '+name)
 
     x = values['temperature'].values
-    y = values['cube_length'].values
+    y = values['cube_length'].values**3
 
     m, b, r, p, std = linregress(x, y)
 
@@ -48,7 +48,7 @@ for group, values in groups:
         ax.plot(xfit, yfit, label='Data')
         ax.plot(x, y, linestyle='none', marker='.', label=equation)
 
-        ax.set_ylabel(r'Cube Length $[\AA]$')
+        ax.set_ylabel(r'Volume $[\AA^{3}]$')
         ax.set_xlabel(r'Temperature $[K]$')
 
         ax.legend()
