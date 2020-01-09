@@ -98,7 +98,7 @@ for group, values in groups:
         ax.axvline(x=xcut, label='Minimum', color='r')
 
         ax.set_xlabel(r'Temperature $[K]$')
-        ax.set_ylabel(r'RMSE $[eV]$')
+        ax.set_ylabel(r'RMSE $[eV/atom]$')
         ax.legend()
 
         fig.tight_layout()

@@ -182,7 +182,6 @@ def analysis(
         pl.close('all')
 
         # Save MSD plot
-
         times_fit = np.linspace(min(times), max(times))
         msd_fit = m*times_fit+b
 
