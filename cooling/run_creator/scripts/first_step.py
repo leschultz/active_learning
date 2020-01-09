@@ -12,7 +12,7 @@ incar = '../templates/incar/hold'  # The VASP input file
 kpoints = '../templates/kpoints/M'  # The VASP kpoints file
 potcar = '/home/leschultz/work/POTCARs/paw/LDA/5.4'  # The VASP potential file
 submit = '../templates/submit/bardeen_morgan.q'  # The cluster submit file
-fits = '../data_input/data.csv'  # Data for linear fits
+fits = '../../../volumes/tv_curves/data/data.csv'  # Data for linear fits
 start_temp = 2000.0  # The starting temperature
 
 # Recomended potentials

@@ -34,4 +34,4 @@ mpirun -n $NSLOTS vasp_std > out.txt
 
 DT="150"  # Change in temperature
 MIN="200"  # Minimum temperature
-python3 ../../../scripts/step_down.py "${DT}" "${MIN}"
+python3 ../../../run_creator/scripts/step_down.py "${DT}" "${MIN}"

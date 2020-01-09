@@ -45,13 +45,13 @@ for i in e:
 r = np.array(r)
 v = 4/3*np.pi*r**3
 
-vols = 0.0
+vol = 0.0
 for i, j in zip(n, v):
-    vols += i*j
+    vol += i*j
 
-l = vols**(1/3)
-lm = l*margin
-lmin = l-lm
-lmax = l+lm
-print('Cube Length [Angstroms]: '+str(l)+' +/- '+str(lm))
-print('Test Lengths [Angstroms]: '+str(np.linspace(lmin, lmax, n_tests)))
+vol_max = (1+margin)*vol
+
+l = vol**(1/3)
+l_max = vol_max**(1/3)
+
+print('Test Lengths [Angstroms]: '+str(np.linspace(l, l_max, n_tests)))
