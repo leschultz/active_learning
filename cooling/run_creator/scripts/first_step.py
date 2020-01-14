@@ -13,6 +13,7 @@ kpoints = '../templates/kpoints/M'  # The VASP kpoints file
 potcar = '/home/leschultz/work/POTCARs/paw/LDA/5.4'  # The VASP potential file
 submit = '../templates/submit/bardeen_morgan.q'  # The cluster submit file
 fits = '../../../volumes/tv_curves/data/data.csv'  # Data for linear fits
+job_run_file = '../templates/submit/run.sh'  # The run file to quench
 start_temp = 2000.0  # The starting temperature
 
 # Recomended potentials
@@ -138,6 +139,7 @@ for group, values in groups:
 
     copyfile(kpoints, join(run, 'KPOINTS'))  # Save KPOINTS
     copyfile(submit, join(run, 'parallel.sh'))  # Save KPOINTS
+    copyfile(job_run_file, join(run, 'run.sh')) # Save run submit
 
     # Save POSCAR
     structure.to(fmt='poscar', filename=join(run, 'POSCAR'))
