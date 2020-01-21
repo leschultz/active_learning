@@ -145,6 +145,6 @@ for group, values in groups:
     structure.to(fmt='poscar', filename=join(run, 'POSCAR'))
 
     # Status update
-    print('Generated ('+str(count)+'/'+total+')'+run)
+    print('Generated ('+str(count)+'/'+total+'): '+run)
 
     count += 1
