@@ -1,3 +1,5 @@
+#!/bin/bash
+
 RECDIR=~/potentials/vasp/
 RECPOTS="${RECDIR}vasp_pots.csv"
 TYPE=pbe
@@ -9,12 +11,13 @@ bash gen_potcar.sh $COMP $TYPE $RECDIR $RECPOTS
 
 cp POSCAR POSCAR_start
 
-for i in 2000 1300
+for i in 2000 1800
 do
 
 mkdir $i
 cd $i
 
+# Do isothermal run
 touch INCAR
 cat > INCAR <<!
 
