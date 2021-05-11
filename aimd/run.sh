@@ -1,13 +1,11 @@
-RECPOTS=~/potentials/vasp/vasp_pots.csv
+RECDIR=~/potentials/vasp/
+RECPOTS="${RECDIR}vasp_pots.csv"
+TYPE=pbe
 COMP=Zr5Cu5
 CORES=$(nproc)
 
 python3 gen_poscar.py $COMP
-bash gen_potcar.sh $COMP
-
-POT=$(cat $RECPOTS | grep yes)
-
-echo $POT
+bash gen_potcar.sh $COMP $TYPE $RECDIR $RECPOTS
 
 cp POSCAR POSCAR_start
 
