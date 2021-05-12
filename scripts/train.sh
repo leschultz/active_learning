@@ -11,7 +11,6 @@ cd $JOB
 # The number of elements
 COMP=$(cat run.sh | grep COMP= | awk -F '=' '{print $2}')
 NELS=$(echo $COMP | grep -Eo '[[:alpha:]]+' | wc -w)
-echo $NELS
 
 # Make file to store values
 rm -f -- train.cfg
