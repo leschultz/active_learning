@@ -11,6 +11,7 @@ from tqdm import tqdm
 import pandas as pd
 import numpy as np
 import random
+import plots
 import sys
 import os
 
@@ -55,10 +56,10 @@ def eval_metrics(y, y_pred):
     r2 = metrics.r2_score(y, y_pred)
 
     results = {}
-    results['rmse'] = rmse
-    results['rmse_sig'] = rmse_sig
-    results['mae'] = mae
-    results['r2'] = r2
+    results[r'$RMSE$'] = rmse
+    results[r'$RMSE/\sigma$'] = rmse_sig
+    results[r'$MAE$'] = mae
+    results[r'$R^{2}$'] = r2
 
     return results
 
@@ -85,8 +86,8 @@ def eval_metrics_prop(y, y_pred):
         res = eval_metrics(z, z_pred)
 
         data[i] = eval_metrics(z, z_pred)
-        data[i]['y'] = list(z)
-        data[i]['y_pred'] = list(z_pred)
+        data[i][i] = list(z)
+        data[i][i+'_pred'] = list(z_pred)
 
     return data
 
@@ -125,7 +126,7 @@ def gather_job(job):
     job = Vasprun(job)
     data = []
     job = (job.ionic_steps)
-    data = parallel(gather_step, job[:2])
+    data = parallel(gather_step, job)
 
     return data
 
@@ -152,7 +153,6 @@ def train(data, train_split):
     test_forces = forces[train_split:]
     test_stresses = stresses[train_split:]
 
-    '''
     # Train a model for evaluation
     train_model = MTPotential()
     train_model.train(
@@ -184,20 +184,16 @@ def train(data, train_split):
                                      )
 
     y_test, y_test_pred = eval_test
-    '''
-
-    y_train = pd.read_csv('y_train.csv')
-    y_train_pred = pd.read_csv('y_train_pred.csv')
-    y_test = pd.read_csv('y_test.csv')
-    y_test_pred = pd.read_csv('y_test_pred.csv')
 
     evaluation = {}
     evaluation['train'] = eval_metrics_prop(y_train, y_train_pred)
     evaluation['test'] = eval_metrics_prop(y_test, y_test_pred)
 
-    print(evaluation)
+    for ikey, ivalue in evaluation.items():
+        for jkey, jvalue in ivalue.items():
+            name = '{}_{}'.format(ikey, jkey)
+            plots.parity(jvalue, jkey, name)
 
-    '''
     model = MTPotential()
     model.train(
                 train_structures=structures,
@@ -211,7 +207,6 @@ def train(data, train_split):
                 max_dist=5.0,
                 max_iter=1000
                 )
-    '''
 
     return model
 
@@ -222,8 +217,7 @@ if __name__ == '__main__':
     match = 'xml'
     train_split = 0.8
 
-    '''
-    jobs = find(runs, match)[:2]
+    jobs = find(runs, match)
     njobs = len(jobs)
     data = []
     count = 1
@@ -233,7 +227,4 @@ if __name__ == '__main__':
         data += gather_job(i)
         count += 1
 
-
     train(data, train_split)
-    '''
-    train([], train_split)
