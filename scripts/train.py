@@ -126,7 +126,7 @@ def gather_job(job):
     job = Vasprun(job)
     data = []
     job = (job.ionic_steps)
-    data = parallel(gather_step, job)
+    data = parallel(gather_step, job[::100])
 
     return data
 
@@ -217,7 +217,7 @@ if __name__ == '__main__':
     match = 'xml'
     train_split = 0.8
 
-    jobs = find(runs, match)
+    jobs = find(runs, match)[:2]
     njobs = len(jobs)
     data = []
     count = 1
