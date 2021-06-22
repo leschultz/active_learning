@@ -1,0 +1,13 @@
+box tilt large
+
+variable dmax equal 1.0e-3
+
+include init.mod
+include potential.mod
+
+compute Pea all pe/atom
+
+dump 1 all custom 1 output_ef.dump id type x y z fx fy fz c_Pea
+dump_modify 1 sort id
+
+run 0

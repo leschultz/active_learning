@@ -1,0 +1,9 @@
+This folder contains the files needed for the active learning of the potential during molecular dynamics (MD) and the folder for "ab initio" calculations.
+
+Input:
+- the input file for `LAMMPS` allows running molecular dynamics at 300 K with Langevin thermostat using Moment Tensor Potential (MTP) as an interatomic potential (in.nb_md)
+- the file with the initial positions of atoms in `LAMMPS` input format (input.pos)
+- the file containing `MLIP` settings activating the calculation of energies and forces with the specified potential and parameters of configurations selection during MD (mlip.ini)
+- the script including all the steps (running MD with `LAMMPS`, selection of configurations, updating the training set, etc.) for MTP active learning (md_al_mtp.sh)
+
+The files init.mtp and train_init.cfg should be copied from the folder `1.training_initial_potential/` to this folder.

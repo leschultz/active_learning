@@ -1,0 +1,8 @@
+This folder contains the files needed for "ab initio" calculations.
+
+Input:
+- the file with Farkas EAM used as ab initio model (Farkas.eam.alloy)
+- the additional files needed to initialize `LAMMPS` parameters (e.g., boundary conditions, units, etc.) and Farkas EAM (init.mod and potential.mod)
+- the `LAMMPS` input file that calculates energies and forces with Farkas EAM at zero temperature (calc_ef.in)
+- the python script allows converting a configuration from `LAMMPS` output format (dump file) to internal `MLIP` format (.cfg file) with energies and forces calculated (convert_lammps_dump_to_cfg.py)
+- the script including all the steps (converting configuration from one format to another, energies and forces calculation with EAM, updating the training set, etc.) needed for "ab initio" calculations (ab_initio_calculations.sh)
