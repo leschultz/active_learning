@@ -2,8 +2,24 @@ box tilt large
 
 variable dmax equal 1.0e-3
 
-include init.mod
-include potential.mod
+units           metal
+atom_style      atomic
+boundary        p p p
+
+read_data        input.pos
+
+mass * 92.9064 # Nb
+
+pair_style eam/alloy
+pair_coeff * * Farkas.eam.alloy Nb Ti
+
+
+# Set neighbor style
+neighbor   2.0 bin
+
+# Setup minimization style
+min_style            cg
+min_modify           dmax ${dmax} line quadratic
 
 compute Pea all pe/atom
 

@@ -18,8 +18,8 @@ BEGIN{
   if(ARGC<=1) { print "Syntax: \n      VASP-poscar2res.awk  POSCAR  ..."; ex=1;exit}
   for(i=2;i<=ARGC;i++){typeT[i-1]=ARGV[i];}
     ARGC=2;
-
-  # Read header, scale and the basis -----------
+    
+  # Read header, scale and the basis -----------  
   getline; title=$0
   getline; scale=$1
   getline; h1[1]=$1*scale; h1[2]=$2*scale; h1[3]=$3*scale;
@@ -29,10 +29,10 @@ BEGIN{
   a=norm(h1); b=norm(h2); c=norm(h3);                                # Length of the basis vectors
   alpha=  angle(h2,h3);  beta=  angle(h1,h3); gamma=  angle(h1,h2);  # Angles in degree
   alphar= alpha/rad2deg; betar= beta/rad2deg; gammar= gamma/rad2deg; # Angles in radians
-
+  
 
   # Check for labels -------------------------
-  getline;
+  getline; 
   if ($1*1 != $1) {
     for(i=1;i<=NF;i++){typeT[i]=$i;}
     getline;
@@ -60,7 +60,7 @@ BEGIN{
   H3[1]=p_xz; H3[2]= p_yz;  H3[3]= lz;
   # Matrix for conversion from cartesian to fractional in the old basis set (if necessary) ----------
   cfv= sqrt(1. -cos(alphar)**2 -cos(betar)**2 -cos(gammar)**2 + 2.*cos(alphar)*cos(betar)*cos(gammar));
-  cf1[1]= 1./a;  cf1[2]= -cos(gammar)/(a*sin(gammar));   cf1[3]= (cos(alphar)*cos(gammar)-cos(betar))/(a*cfv*sin(gammar));
+  cf1[1]= 1./a;  cf1[2]= -cos(gammar)/(a*sin(gammar));   cf1[3]= (cos(alphar)*cos(gammar)-cos(betar))/(a*cfv*sin(gammar)); 
   cf2[1]= 0.00; cf2[2]= 1./(b*sin(gammar));   cf2[3]= (cos(betar)*cos(gammar)-cos(alphar)i)/(b*cfv*sin(gammar));
   cf3[1]= 0.00; cf3[2]= 0.00; cf3[3]= sin(gammar)/(c*cfv);
 
@@ -85,7 +85,7 @@ BEGIN{
     for(i=1;i<=type[k];i++){
       getline
       iatom++
-      x=$1; y=$2; z=$3;
+      x=$1; y=$2; z=$3;     
       if (!fractional){
         xx=x*cf1[1]+y*cf1[2]+z*cf1[3];
         yy=x*cf2[1]+y*cf2[2]+z*cf2[3];
@@ -95,7 +95,7 @@ BEGIN{
       xx=x*H1[1]+y*H2[1]+z*H3[1];
       yy=x*H1[2]+y*H2[2]+z*H3[2];
       zz=x*H1[3]+y*H2[3]+z*H3[3];
-      printf"%4i  %-4s 0  %7f %7f %7f\n",iatom, k, xx,yy,zz
+      printf"%4i  %-4s   %7f %7f %7f\n",iatom, k, xx,yy,zz
     }
   }
 

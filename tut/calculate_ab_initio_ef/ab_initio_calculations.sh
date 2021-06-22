@@ -12,7 +12,7 @@ do
     fi
     $1 calc_ef.in
     python3 convert_lammps_dump_to_cfg.py
-    cat output_ef.cfg >> ../train.cfg
+    cat output_ef.cfg >> train.cfg
 done
 
 rm diff.cfg 

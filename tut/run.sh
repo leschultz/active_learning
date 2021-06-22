@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Programs
+SEED=$RANDOM
 CORES=$(nproc)
-CORES=2  # Delete this
+#CORES=2  # Delete this
 MPI="mpirun -n ${CORES}"
 LMP="lmp_mpi -in"
 VASP='vasp_std'
@@ -31,8 +32,8 @@ rm -f out.cfg
 mkdir $TEMPER
 cd $TEMPER
 
-mkdir vasp
-cd vasp
+mkdir aimd
+cd aimd
 
 # Create initial features
 python3 ../../gen_poscar.py $COMP  # Creates random initial positions
@@ -50,6 +51,7 @@ Gamma
 touch INCAR
 cat > INCAR <<!
 SYSTEM =  $COMP_$TEMPER
+NCORE = $CORES
 
 # electronic degrees
 LREAL = A                      # real space projection
@@ -65,7 +67,7 @@ NELM = 10                      # maximum of steps per time step
 
 # MD (do little writing to save disc space)
 IBRION = 0                     # main molecular dynamics tag
-NSW = 2                        # number of MD steps
+NSW = 30                       # number of MD steps
 POTIM = 3                      # time step of MD [fs]
 NWRITE = 0                     # controls output
 LCHARG = .FALSE.               # no charge density written out
@@ -83,11 +85,11 @@ ISIF = 2                       # this tag selects the ensemble in combination wi
 $MPI $VASP
 
 cd ..
-mkdir pot
-cd pot
+mkdir potential
+cd potential
 
 # Create training file
-mlp convert-cfg --input-format=vasp-outcar ../vasp/OUTCAR train.cfg
+mlp convert-cfg --input-format=vasp-outcar ../aimd/OUTCAR train.cfg
 
 # Prepare potential
 NELS=$(echo $COMP | grep -Eo '[[:alpha:]]+' | wc -w)
@@ -108,18 +110,15 @@ do
 
 # Run MD
 touch preselected.cfg
-../../pos2lmp.awk ../vasp/POSCAR > input.pos
+../../poscar2lammps.awk ../aimd/POSCAR > input.pos
 
 touch in.nb_md
 cat > in.nb_md <<!
-variable        Tequil index $TEMPER
-variable        seed index 826626413
-
 units           metal
 atom_style      atomic
 boundary        p p p
 
-read_data        input.pos
+read_data       input.pos
 
 mass            * 92.90638
 
@@ -132,7 +131,7 @@ neigh_modify    every 1 delay 5 check yes
 timestep        0.001
 
 fix             1 all nve
-fix             2 all langevin ${Tequil} ${Tequil} 0.1 ${seed} zero yes
+fix             2 all langevin ${TEMPER} ${TEMPER} 0.1 ${SEED} zero yes
 
 thermo_style    custom step temp
 thermo 1000
@@ -143,7 +142,24 @@ run             100000
 reset_timestep  0
 !
 
-$MPI $LMP in.nb_md
+touch mlip.ini
+cat > mlip.ini <<!
+mtp-filename       curr.mtp
+calculate-efs      TRUE
+select             TRUE
+                   select:threshold        2.1
+                   select:threshold-break  10.0
+                   select:save-selected    preselected.cfg
+                   select:load-state       state.als
+
+select TRUE
+select:threshold 2.1
+select:threshold-break 10.0
+select:save-selected preselected.cfg
+select:load-state state.als
+!
+
+$LMP in.nb_md  # Has to run in serial because of lmp potential
 
 # The number of MD steps with extrapolation grade above a threshold in mlip.ini
 n_preselected=$(grep "BEGIN" preselected.cfg | wc -l)
@@ -153,16 +169,17 @@ if [ $n_preselected -gt 0 ]; then
 
     # Add configurations to the training set from preselected
     mlp select-add curr.mtp train.cfg preselected.cfg diff.cfg --als-filename=state.als
-    cp diff.cfg calculate_ab_initio_ef/
+    cp diff.cfg ../../calculate_ab_initio_ef/
 
     # Clean files
     rm -f preselected.cfg
     rm -f selected.cfg
 
     # Calculate energies and forces and convert LAMMPS to MLIP format.
-    cd ../calculate_ab_initio_ef/
+    cd ../../calculate_ab_initio_ef/
     ./ab_initio_calculations.sh "${MPI} ${LMP}"
     cd -
+    mv ../../calculate_ab_initio_ef/train.cfg .
 
     # Re-train the current potential
     $MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --update-mindist
