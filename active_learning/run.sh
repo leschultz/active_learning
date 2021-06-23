@@ -1,8 +1,12 @@
 #!/bin/bash
 
-# Programs
+# Input Prameters
+COMP=Si64
+TEMPER=2000
 SEED=$RANDOM
 CORES=$(nproc)
+
+# Programs
 MPI="prun"
 LMP="lmp_intel_cpu_intelmpi -in"
 VASP='vasp_std'
@@ -11,15 +15,13 @@ VASP='vasp_std'
 RECDIR=~/potentials/vasp/
 RECPOTS="${RECDIR}vasp_pots.csv"
 TYPE=pbe
-COMP=Zr5Cu5
-TEMPER=2000
 
 # MLIP-2 inputs
 POTS=~/potentials/mlip-2/
 POT=08.mtp
 
 # Clean working space
-rm -rf runs
+#rm -rf runs
 rm -f train.cfg
 rm -f curr.mtp
 rm -f preselected.cfg
@@ -39,6 +41,7 @@ cd $TEMPER
 mkdir aimd
 cd aimd
 
+: << 'END'
 # Create initial features
 python3 ../../../gen_poscar.py $COMP  # Creates random initial positions
 bash ../../../gen_potcar.sh $COMP $TYPE $RECDIR $RECPOTS  # Creates potential
@@ -74,7 +77,7 @@ NELM = 60                      # maximum of steps per time step
 
 # MD (do little writing to save disc space)
 IBRION = 0                     # main molecular dynamics tag
-NSW = 30                       # number of MD steps
+NSW = 300                      # number of MD steps
 POTIM = 3                      # time step of MD [fs]
 NWRITE = 0                     # controls output
 LCHARG = .FALSE.               # no charge density written out
@@ -90,7 +93,9 @@ ISIF = 2                       # this tag selects the ensemble in combination wi
 
 # Run AIMD
 $MPI $VASP
+END
 
+MASSES=$(cat POTCAR | grep MASS | awk -F ' ' '{print $3}' | sed 's/\;//g') # Delete
 cd ..
 mkdir potential
 cd potential
@@ -121,6 +126,7 @@ touch preselected.cfg
 
 # Define the masses for classical MD
 COUNTER=1
+rm -f masses.txt
 touch masses.txt
 for i in $MASSES;
 do
@@ -137,8 +143,6 @@ boundary        p p p
 read_data       input.pos
 
 include         masses.txt
-mass            1 92.90638
-mass            2 60.0
 
 pair_style mlip mlip.ini
 pair_coeff * *
@@ -148,13 +152,12 @@ neigh_modify    every 1 delay 5 check yes
 
 timestep        0.001
 
-fix             1 all nve
-fix             2 all langevin ${TEMPER} ${TEMPER} 0.1 ${SEED} zero yes
+fix             1 all nvt temp ${TEMPER} ${TEMPER} 100.0
 
 thermo_style    custom step temp
-thermo 1000
+thermo 1
 
-dump   1 all custom 1000 dump.nb id type x y z fx fy fz
+dump   1 all custom 1 dump.nb id type x y z fx fy fz
 
 run             100000
 reset_timestep  0
