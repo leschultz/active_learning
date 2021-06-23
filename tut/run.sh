@@ -3,7 +3,7 @@
 # Programs
 SEED=$RANDOM
 CORES=$(nproc)
-#CORES=2  # Delete this
+CORES=2  # Delete this
 MPI="mpirun -n ${CORES}"
 LMP="lmp_mpi -in"
 VASP='vasp_std'
@@ -20,13 +20,18 @@ POTS=~/packages/mlip-2/untrained_mtps/
 POT=08.mtp
 
 # Clean working space
-rm -rf initial
+rm -rf runs
 rm -f train.cfg
 rm -f curr.mtp
 rm -f preselected.cfg
 rm -f diff.cfg
 rm -f selected.cfg
 rm -f out.cfg
+
+
+# Directory where run data lives
+mkdir runs
+cd runs
 
 # Initial VASP run
 mkdir $TEMPER
@@ -36,8 +41,11 @@ mkdir aimd
 cd aimd
 
 # Create initial features
-python3 ../../gen_poscar.py $COMP  # Creates random initial positions
-bash ../../gen_potcar.sh $COMP $TYPE $RECDIR $RECPOTS  # Creates potential
+python3 ../../../gen_poscar.py $COMP  # Creates random initial positions
+bash ../../../gen_potcar.sh $COMP $TYPE $RECDIR $RECPOTS  # Creates potential
+
+# Get the masses for the elements
+MASSES=$(cat POTCAR | grep MASS | awk -F ' ' '{print $3}' | sed 's/\;//g')
 
 touch KPOINTS
 cat > KPOINTS <<!
@@ -67,7 +75,7 @@ NELM = 10                      # maximum of steps per time step
 
 # MD (do little writing to save disc space)
 IBRION = 0                     # main molecular dynamics tag
-NSW = 30                       # number of MD steps
+NSW = 3                        # number of MD steps
 POTIM = 3                      # time step of MD [fs]
 NWRITE = 0                     # controls output
 LCHARG = .FALSE.               # no charge density written out
@@ -110,7 +118,16 @@ do
 
 # Run MD
 touch preselected.cfg
-../../poscar2lammps.awk ../aimd/POSCAR > input.pos
+../../../poscar2lammps.awk ../aimd/POSCAR > input.pos
+
+# Define the masses for classical MD
+COUNTER=1
+touch masses.txt
+for i in $MASSES;
+do
+	echo "mass $COUNTER $i" >> masses.txt
+	COUNTER=$((COUNTER + 1))
+done
 
 touch in.nb_md
 cat > in.nb_md <<!
@@ -120,7 +137,9 @@ boundary        p p p
 
 read_data       input.pos
 
-mass            * 92.90638
+include         masses.txt
+mass            1 92.90638
+mass            2 60.0
 
 pair_style mlip mlip.ini
 pair_coeff * *
@@ -176,10 +195,10 @@ if [ $n_preselected -gt 0 ]; then
     rm -f selected.cfg
 
     # Calculate energies and forces and convert LAMMPS to MLIP format.
-    cd ../../calculate_ab_initio_ef/
+    cd ../../../calculate_ab_initio_ef/
     ./ab_initio_calculations.sh "${MPI} ${LMP}"
     cd -
-    mv ../../calculate_ab_initio_ef/train.cfg .
+    mv ../../../calculate_ab_initio_ef/train.cfg .
 
     # Re-train the current potential
     $MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --update-mindist
