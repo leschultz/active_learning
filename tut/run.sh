@@ -71,10 +71,12 @@ ALGO = Very Fast               # recommended for MD (fall back ALGO = Fast)
 MAXMIX = 40                    # reuse mixer from one MD step to next
 ISYM = 0                       # no symmetry
 NELMIN = 4                     # minimum of steps per time step
+#NELM = 60                      # maximum of steps per time step
 NELM = 10                      # maximum of steps per time step
 
 # MD (do little writing to save disc space)
 IBRION = 0                     # main molecular dynamics tag
+#NSW = 30                        # number of MD steps
 NSW = 3                        # number of MD steps
 POTIM = 3                      # time step of MD [fs]
 NWRITE = 0                     # controls output
@@ -188,17 +190,18 @@ if [ $n_preselected -gt 0 ]; then
 
     # Add configurations to the training set from preselected
     mlp select-add curr.mtp train.cfg preselected.cfg diff.cfg --als-filename=state.als
-    cp diff.cfg ../../calculate_ab_initio_ef/
+    mkdir calculate_ab_initio_ef
+    cp diff.cfg calculate_ab_initio_ef
 
     # Clean files
     rm -f preselected.cfg
     rm -f selected.cfg
 
     # Calculate energies and forces and convert LAMMPS to MLIP format.
-    cd ../../../calculate_ab_initio_ef/
-    ./ab_initio_calculations.sh "${MPI} ${LMP}"
+    cd calculate_ab_initio_ef
+    ../../../../ab_initio_calculations.sh $MPI $VASP
     cd -
-    mv ../../../calculate_ab_initio_ef/train.cfg .
+    mv calculate_ab_initio_ef/train.cfg .
 
     # Re-train the current potential
     $MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --update-mindist
