@@ -22,6 +22,9 @@ do
     # Do DFT to get energies and forces
     cd $i
     $MPI $VASP
+
+    mlp convert-cfg OUTCAR calculated.cfg --input-format=vasp-outcar
+    cat calculated.cfg >> ../../train.cfg
     cd -
 
     rm -rf $i

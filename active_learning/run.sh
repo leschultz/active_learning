@@ -3,9 +3,8 @@
 # Programs
 SEED=$RANDOM
 CORES=$(nproc)
-CORES=2  # Delete this
-MPI="mpirun -n ${CORES}"
-LMP="lmp_mpi -in"
+MPI="prun"
+LMP="lmp_intel_cpu_intelmpi -in"
 VASP='vasp_std'
 
 # VASP inputs
@@ -16,7 +15,7 @@ COMP=Zr5Cu5
 TEMPER=2000
 
 # MLIP-2 inputs
-POTS=~/packages/mlip-2/untrained_mtps/
+POTS=~/potentials/mlip-2/
 POT=08.mtp
 
 # Clean working space
@@ -71,13 +70,11 @@ ALGO = Very Fast               # recommended for MD (fall back ALGO = Fast)
 MAXMIX = 40                    # reuse mixer from one MD step to next
 ISYM = 0                       # no symmetry
 NELMIN = 4                     # minimum of steps per time step
-#NELM = 60                      # maximum of steps per time step
-NELM = 10                      # maximum of steps per time step
+NELM = 60                      # maximum of steps per time step
 
 # MD (do little writing to save disc space)
 IBRION = 0                     # main molecular dynamics tag
-#NSW = 30                        # number of MD steps
-NSW = 3                        # number of MD steps
+NSW = 30                       # number of MD steps
 POTIM = 3                      # time step of MD [fs]
 NWRITE = 0                     # controls output
 LCHARG = .FALSE.               # no charge density written out
@@ -201,7 +198,6 @@ if [ $n_preselected -gt 0 ]; then
     cd calculate_ab_initio_ef
     ../../../../ab_initio_calculations.sh $MPI $VASP
     cd -
-    mv calculate_ab_initio_ef/train.cfg .
 
     # Re-train the current potential
     $MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --update-mindist
