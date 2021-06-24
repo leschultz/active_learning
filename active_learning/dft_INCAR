@@ -1,4 +1,4 @@
-PREC = Accurate
+PREC = Normal
 ALGO = Fast
 LREAL = Auto
 ISPIN = 2
