@@ -19,5 +19,4 @@ cp $WRKDIR/templates/lammps/mlip.ini .
 
 # The LAMMPS input file
 cp $WRKDIR/templates/lammps/md.in .
-sed -i "s/TEBEG/$TEBEG/g" md.in
 }

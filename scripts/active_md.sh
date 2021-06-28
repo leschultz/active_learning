@@ -1,9 +1,27 @@
 #!/bin/bash
 
-# Scripts
-source $WRKDIR/run_types/gen_aimd.sh
-source $WRKDIR/run_types/gen_dft.sh
-source $WRKDIR/run_types/gen_md.sh
+# Input Prameters
+COMP=Si64
+CORES=$(nproc)
+JOBDIR=~/runs/active_test
+
+# Programs
+MPI="prun"                           # MPI
+LMP="lmp_intel_cpu_intelmpi -in"     # LAMMPS
+VASP='vasp_std'                      # VASP
+WRKDIR=~/packages/vasp_runs/scripts  # Active Learning Scripts
+
+# VASP inputs
+RECDIR=~/potentials/vasp/
+RECPOTS=$WRKDIR/vasp_pots.csv
+TYPE=pbe
+
+# MLIP-2 inputs
+POTS=~/potentials/mlip-2/
+POT=08.mtp
+
+# Start active learning
+source $WRKDIR/run.sh
 
 # Make AIMD starting run
 mkdir aimd
