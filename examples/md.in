@@ -2,26 +2,112 @@ units           metal
 atom_style      atomic
 boundary        p p p
 
+# START DO NOT TOUCH
 read_data       input.pos
-
 include         masses.txt
-
 pair_style mlip mlip.ini
 pair_coeff * *
+# END DO NOT TOUCH
 
-# User can modify below for appropriate MD
+###############################################################################
 
-neighbor        0.5 bin
-neigh_modify    every 1 delay 5 check yes
+# Time variables
+variable mytimestep                equal  0.001
 
-timestep        0.001
+# Random seed
+variable seed                      equal  546080
 
-fix             1 all nvt temp 2000 2000 0.1
+# Run variables
+variable eqtemp                    equal  2000
+variable dT                        equal  100
+variable i                         loop   12
+variable stephold                  equal  100000
 
-thermo_style    custom step temp press vol pe ke etotal
-thermo 1
+# Computed values by LAMMPS
+compute  temp      all temp                 # Overall temperature
+compute  pressure  all pressure thermo_temp # Overall pressure
+compute  pe        all pe                   # Potenntial energy
+compute  ke        all ke                   # Kinetic energy
 
-dump   1 all custom 1 dump.nb id type x y z fx fy fz
+variable vol       equal vol                # Simulation Volume
+variable enthalpy  equal enthalpy           # Simulation enthalpy
 
-run             10000
-reset_timestep  0
+# Data output
+variable mydumprate                equal  100
+
+################################################################################
+
+# Time step
+timestep ${mytimestep}
+
+################################################################################
+
+shell         mkdir step_0
+
+# Save atom positions at an interval
+dump          my_dump all custom ${mydumprate} step_0/traj.lammpstrj &
+              id type xu yu zu vz vy vz
+
+dump_modify my_dump sort id
+
+# Save thermodynamic data
+fix           thermo_save all ave/time 1 1 ${mydumprate} &
+              c_temp c_pressure v_vol c_pe c_ke v_enthalpy &
+              file step_0/system.txt
+
+# Randomize initial velocities
+velocity      all create ${eqtemp} ${seed}
+
+# Define an NVT equilibrium hold
+fix           eq all nvt temp ${eqtemp} ${eqtemp} 0.1
+run           ${stephold}
+unfix         eq
+
+undump        my_dump
+unfix         thermo_save
+
+write_data    step_0/data.txt
+write_restart step_0/restart.txt
+print         "${eqtemp}" file step_0/temperature.txt
+
+# Loop through steps of isothermal holds
+label         start_loop
+
+variable      dir_name  string "step_${i}"
+shell         mkdir ${dir_name}
+
+# Save atom positions at an interval
+variable      dump_name string "${dir_name}/traj.lammpstrj"
+dump          my_dump all custom ${mydumprate} ${dump_name} &
+              id type xu yu zu vz vy vz
+
+dump_modify my_dump sort id
+
+# Save thermodynamic data
+variable      thermo_name string "${dir_name}/system.txt"
+fix           thermo_save all ave/time 1 1 ${mydumprate} &
+              c_temp c_pressure v_vol c_pe c_ke v_enthalpy &
+              file ${thermo_name}
+
+# Begin the temperature hold
+variable      t equal ${eqtemp}-${i}*${dT}
+
+# Save the temperature set
+variable      temp_name string "${dir_name}/temperature.txt"
+print         "${t}" file ${temp_name}
+
+fix           step all nvt temp ${t} ${t} 0.1
+run           ${stephold}
+unfix         step
+
+variable      data_name string "${dir_name}/data.txt"
+variable      restart_name string "${dir_name}/restart.txt"
+
+write_data    ${data_name}
+write_restart ${restart_name}
+
+undump        my_dump
+unfix         thermo_save
+
+next          i
+jump          SELF start_loop
