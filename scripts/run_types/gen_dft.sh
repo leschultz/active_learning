@@ -16,17 +16,17 @@ source $WRKDIR/funcs/gen_potcar.sh
 n_selected=$(grep "BEGIN" diff.cfg | wc -l)
 mlp convert-cfg diff.cfg POSCAR --output-format=vasp-poscar
 
-for ((i=0; i<n_selected; i++))
+for ((n=0; n<n_selected; n++))
 do
+
+    mkdir $n  # Create the directory for DFT
     if [ $n_selected -eq 1 ]; then 
-	mkdir 0
-        mv POSCAR 0/POSCAR
+        mv POSCAR $n/POSCAR
     elif [ $n_selected -gt 1 ]; then
-	mkdir $i
-        mv POSCAR$i $i/POSCAR
+        mv POSCAR$n $n/POSCAR
     fi
 
-    cd $i
+    cd $n
     cp $WRKDIR/templates/vasp/KPOINTS .
     cp $WRKDIR/templates/vasp/dft_INCAR ./INCAR
     pot $COMP $TYPE $RECDIR $RECPOTS
@@ -36,9 +36,7 @@ do
 
     mlp convert-cfg OUTCAR calculated.cfg --input-format=vasp-outcar
     cat calculated.cfg >> $TRAIN
-    cd -
-
-    rm -rf $i
+    cd ../
 
 done
 
