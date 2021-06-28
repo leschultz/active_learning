@@ -1,17 +1,10 @@
 dft_job ()
 {
 
-WRKDIR=$1   # Location of scripts
-COMP=$2     # The composition
-RECDIR=$3   # The directory with VASP potentials
-RECPOTS=$4  # The the file location for recomended VASP potentials
-TYPE=$5     # The type of potential to consider
-MPI=$6      # MPI
-VASP=$7     # VASP
-TRAIN=$8    # The training file
-
-# Load needed functions
-source $WRKDIR/funcs/gen_potcar.sh
+TOPDIR=$1   # Location of scripts
+MPI=$2      # MPI
+VASP=$3     # VASP
+TRAIN=$4    # The training file
 
 n_selected=$(grep "BEGIN" diff.cfg | wc -l)
 mlp convert-cfg diff.cfg POSCAR --output-format=vasp-poscar
@@ -27,9 +20,11 @@ do
     fi
 
     cd $n
-    cp $WRKDIR/templates/vasp/KPOINTS .
-    cp $WRKDIR/templates/vasp/dft_INCAR ./INCAR
-    pot $COMP $TYPE $RECDIR $RECPOTS
+
+    # Create input files
+    cp $TOPDIR/KPOINTS .
+    cp $TOPDIR/POTCAR .
+    cp $TOPDIR/DFT_INCAR ./INCAR
 
     # Do DFT to get energies and forces
     $MPI $VASP

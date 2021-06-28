@@ -1,9 +1,18 @@
 #!/bin/bash
 
+# Clean
+rm -rf run
+
 # Scripts
 source $WRKDIR/run_types/gen_aimd.sh
 source $WRKDIR/run_types/gen_dft.sh
 source $WRKDIR/run_types/gen_md.sh
+
+TOPDIR=$(pwd)
+
+# Make run directory
+mkdir run
+cd run
 
 # Make AIMD starting run
 mkdir aimd
@@ -11,10 +20,14 @@ cd aimd
 AIMDDIR=$(pwd)
 
 # Generate VASP run files and get element masses
-MASSES=$(aimd_job $WRKDIR $COMP $RECDIR $RECPOTS $TYPE)
+MASSES=$(aimd_job $TOPDIR)
 
 # Run AIMD
 $MPI $VASP
+
+# Get elements and masses from POTCAR
+MASSES=$(cat POTCAR | grep MASS | awk -F ' ' '{print $3}' | sed 's/\;//g')
+ELEMS=$(cat POTCAR | grep 'VRHFIN =' | grep -oP '(?<==).*?(?=:)')
 
 cd ../
 mkdir potential
@@ -22,12 +35,12 @@ cd potential
 POTDIR=$(pwd)
 
 # Create training file
-mlp convert-cfg --input-format=vasp-outcar ../aimd/OUTCAR train.cfg
+mlp convert-cfg --input-format=vasp-outcar $AIMDDIR/OUTCAR train.cfg
 
 # Prepare potential
-NELS=$(echo $COMP | grep -Eo '[[:alpha:]]+' | wc -w)
+NELS=$(echo $ELEMS | grep -Eo '[[:alpha:]]+' | wc -w)
 MINDIST=$(mlp mindist train.cfg | awk -F ': ' '{print $2}')
-cp "${POTS}${POT}" ./curr.mtp
+cp $TOPDIR/curr.mtp ./curr.mtp
 sed -i "s/species_count.*/species_count = $NELS/g" curr.mtp
 sed -i "s/min_dist.*/min_dist = $MINDIST/g" curr.mtp
 
@@ -56,7 +69,7 @@ cd md
 # Copy starting postions to LAMMPS run
 $WRKDIR/convert/poscar2lammps.awk $AIMDDIR/POSCAR > input.pos
 touch preselected.cfg
-md_job $WRKDIR "$MASSES"  # Preapare MD job
+md_job $TOPDIR "$MASSES"  # Preapare MD job
 
 # Add potential files
 mv $POTDIR/curr.mtp .  # Needed for MD
@@ -81,7 +94,7 @@ if [ $n_preselected -gt 0 ]; then
 
     # Calculate energies and forces and convert LAMMPS to MLIP format.
     cd ../dft
-    dft_job $WRKDIR $COMP $RECDIR $RECPOTS $TYPE $MPI $VASP ../train.cfg
+    dft_job $TOPDIR $MPI $VASP ../train.cfg
     mv diff.cfg ../
     mv curr.mtp ../
     mv state.als ../

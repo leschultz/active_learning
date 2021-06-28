@@ -12,7 +12,7 @@ NELM = 60                      # maximum of steps per time step
 
 # MD
 IBRION = 0                     # main molecular dynamics tag
-NSW = 30                       # number of MD steps
+NSW = 3                        # number of MD steps
 POTIM = 3                      # time step of MD [fs]
 LCHARG = .FALSE.               # no charge density written out
 LWAVE = .FALSE.                # no wave function coefficients written out

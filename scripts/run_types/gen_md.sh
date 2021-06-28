@@ -1,7 +1,7 @@
 md_job ()
 {
 
-WRKDIR=$1   # Location of scripts
+TOPDIR=$1   # Location of job
 MASSES=$2   # The masses for each element
 
 # Define the masses for classical MD
@@ -15,8 +15,8 @@ do
 done
 
 # The potential to use
-cp $WRKDIR/templates/lammps/mlip.ini .
+cp $TOPDIR/mlip.ini .
 
 # The LAMMPS input file
-cp $WRKDIR/templates/lammps/md.in .
+cp $TOPDIR/md.in .
 }
