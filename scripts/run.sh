@@ -6,7 +6,7 @@ source ./run_types/gen_dft.sh
 source ./run_types/gen_md.sh
 
 # Input Prameters
-COMP=Cu5Zr5
+COMP=Si64
 TEBEG=2000
 TEND=600
 DT=100
@@ -36,11 +36,9 @@ cd ..
 mkdir runs
 cd runs
 
-mkdir $TEBEG
-cd $TEBEG
-
 mkdir aimd
 cd aimd
+AIMDDIR=$(pwd)
 
 # Generate VASP run files and get element masses
 MASSES=$(aimd_job $WRKDIR $COMP $TEBEG $TEBEG $RECDIR $RECPOTS $TYPE)
@@ -48,12 +46,13 @@ MASSES=$(aimd_job $WRKDIR $COMP $TEBEG $TEBEG $RECDIR $RECPOTS $TYPE)
 # Run AIMD
 $MPI $VASP
 
-cd ../../
+cd ../
 mkdir potential
 cd potential
+POTDIR=$(pwd)
 
 # Create training file
-mlp convert-cfg --input-format=vasp-outcar ../$TEBEG/aimd/OUTCAR train.cfg
+mlp convert-cfg --input-format=vasp-outcar ../aimd/OUTCAR train.cfg
 
 # Prepare potential
 NELS=$(echo $COMP | grep -Eo '[[:alpha:]]+' | wc -w)
@@ -68,20 +67,33 @@ $MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp
 # Initialize active learning state
 mlp calc-grade curr.mtp train.cfg train.cfg out.cfg --als-filename=state.als
 
-# Copy starting postions to LAMMPS run
-$WRKDIR/convert/poscar2lammps.awk ../$TEBEG/aimd/POSCAR > input.pos
+cd ..
+
+mkdir md_dft
+cd md_dft
 
 # Start infinite loop
+ITERS=0
 while [ 1 -gt 0 ]
 do
 
-# Run MD
+mkdir $ITERS
+cd $ITERS
+
+mkdir md
+cd md
+
+# Copy starting postions to LAMMPS run
+$WRKDIR/convert/poscar2lammps.awk $AIMDDIR/POSCAR > input.pos
 touch preselected.cfg
+md_job $WRKDIR "$MASSES"  # Preapare MD job
 
-# Define the masses for classical MD
-md $WRKDIR "$MASSES"
+# Add potential files
+mv $POTDIR/curr.mtp .  # Needed for MD
+mv $POTDIR/state.als . # Needed for MD
+mv $POTDIR/train.cfg . # Needed for adding frames to training
 
-$LMP md.in  # Has to run in serial because of lmp potential
+$LMP md.in  # Has to run in serial because of active learning
 
 # The number of MD steps with extrapolation grade above a threshold in mlip.ini
 n_preselected=$(grep "BEGIN" preselected.cfg | wc -l)
@@ -91,17 +103,20 @@ if [ $n_preselected -gt 0 ]; then
 
     # Add configurations to the training set from preselected
     mlp select-add curr.mtp train.cfg preselected.cfg diff.cfg --als-filename=state.als
-    mkdir calculate_ab_initio_ef
-    cp diff.cfg calculate_ab_initio_ef
-
-    # Clean files
-    rm -f preselected.cfg
-    rm -f selected.cfg
+    mkdir ../dft
+    mv diff.cfg ../dft
+    mv curr.mtp ../dft
+    mv state.als ../dft
+    mv train.cfg ../dft
 
     # Calculate energies and forces and convert LAMMPS to MLIP format.
-    cd calculate_ab_initio_ef
-    dft $WRKDIR $COMP $RECDIR $RECPOTS $TYPE $MPI $VASP
-    cd -
+    cd ../dft
+    dft_job $WRKDIR $COMP $RECDIR $RECPOTS $TYPE $MPI $VASP ../train.cfg
+    mv diff.cfg ../
+    mv curr.mtp ../
+    mv state.als ../
+    mv train.cfg ../
+    cd ../
 
     # Re-train the current potential
     $MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --update-mindist
@@ -109,10 +124,15 @@ if [ $n_preselected -gt 0 ]; then
     # Update the active learning state
     mlp calc-grade curr.mtp train.cfg diff.cfg out.cfg --als-filename=state.als
     
-    # Clean files
-    rm -f diff.cfg
-    rm -f out.cfg
-    
+    # Move back to potential folder
+    mv curr.mtp $POTDIR
+    mv state.als $POTDIR
+    mv train.cfg $POTDIR
+    cd ../
+
+    # Increment counter
+    ITERS=$((ITERS+1))
+
 elif  [ $n_preselected -eq 0 ]; then
     exit
 fi

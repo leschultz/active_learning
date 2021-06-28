@@ -1,4 +1,4 @@
-md ()
+md_job ()
 {
 
 WRKDIR=$1   # Location of scripts

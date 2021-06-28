@@ -1,6 +1,4 @@
-#!/bin/bash
-
-dft ()
+dft_job ()
 {
 
 WRKDIR=$1   # Location of scripts
@@ -10,6 +8,7 @@ RECPOTS=$4  # The the file location for recomended VASP potentials
 TYPE=$5     # The type of potential to consider
 MPI=$6      # MPI
 VASP=$7     # VASP
+TRAIN=$8    # The training file
 
 # Load needed functions
 source $WRKDIR/funcs/gen_potcar.sh
@@ -36,7 +35,7 @@ do
     $MPI $VASP
 
     mlp convert-cfg OUTCAR calculated.cfg --input-format=vasp-outcar
-    cat calculated.cfg >> ../../train.cfg
+    cat calculated.cfg >> $TRAIN
     cd -
 
     rm -rf $i

@@ -14,12 +14,12 @@ neigh_modify    every 1 delay 5 check yes
 
 timestep        0.001
 
-fix             1 all nvt temp TEBEG TEBEG 100.0
+fix             1 all npt temp TEBEG TEBEG 0.1 iso 1 1 1
 
 thermo_style    custom step temp press vol pe ke etotal
 thermo 1
 
 dump   1 all custom 1 dump.nb id type x y z fx fy fz
 
-run             100000
+run             10000
 reset_timestep  0
