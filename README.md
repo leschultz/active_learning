@@ -1,10 +1,27 @@
 # Active learning using VASP, LAMMPS, and MLIP-2
 
-The files along with their description follow the convention of <name: > <description> below.
+## Dependencies
+
+```
+ONEAPI from Intel
+mlip-2
+VASP.5*
+LAMMPS
+LAMMPS mlip-2 interface
+``` 
+## To run
+Execute the following command:
+
+```
+./active_md.sh
+```
+
+## Tool description
+The files along with their description follow the convention of \<name: \> \<description\> below. Make sure to edit files in the examples directory in your own run. All files in the examles directory are needed along with their naming convention.
 
 ```
 vasp_runs
-├── README.md
+├── README.md:                  Self-explanatory
 ├── examples
 │   ├── DFT_INCAR:              VASP INCAR file for DFT
 │   ├── KPOINTS:                VASP KPOINTS file for AIMD and DFT
