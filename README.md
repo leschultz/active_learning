@@ -20,7 +20,7 @@ Execute the following command:
 The files along with their description follow the convention of \<name: \> \<description\> below. Make sure to edit files in the examples directory in your own run. All files in the examles directory are needed along with their naming convention.
 
 ```
-vasp_runs
+active_learning
 ├── README.md:                  Self-explanatory
 ├── examples
 │   ├── DFT_INCAR:              VASP INCAR file for DFT
@@ -45,6 +45,7 @@ vasp_runs
 Outputs are described below for an example run and follow the convention of \<name: \> \<description\>.
 
 ```
+run
 ├── aimd:         The AIMD initial training data
 ├── md_dft:       Beginning of active learning loop
 │   ├── 0
