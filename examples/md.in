@@ -110,4 +110,4 @@ undump        my_dump
 unfix         thermo_save
 
 next          i
-jump          SELF start_loop
+jump          md.in start_loop
