@@ -30,8 +30,8 @@ vasp_runs
 │   ├── POTCAR:                 User generated POTCAR for VASP
 │   ├── active_md.sh:           File linking programs and starting active learning
 │   ├── curr.mtp:               File containg template MLIP-2 potential
-│   ├── md.in:                  LAMMPS input file
-│   └── mlip.ini:               MLIP-2 parameter file.
+│   ├── md.in:                  LAMMPS input file following desired MD run
+│   └── mlip.ini:               MLIP-2 parameter file
 └── scripts
     ├── convert
     │   └── poscar2lammps.awk:  Convert POSCAR to LAMMPS readable file
@@ -40,4 +40,17 @@ vasp_runs
         ├── gen_aimd.sh:        Generate AIMD run
         ├── gen_dft.sh:         Generate DFT runs
         └── gen_md.sh:          Generate classical MD runs
+```
+
+Outputs are described below for an example run and follow the convention of \<name: \> \<description\>.
+
+```
+├── aimd:         The AIMD initial training data
+├── md_dft:       Beginning of active learning loop
+│   ├── 0
+│   │   ├── md:   Run classical MD with initial potential
+│   │   └── dft:  Run DFT for flagged configurations
+│   └── 1
+│       └── md:   Final classical MD (no flagged configurations and can be n > 1)
+└── potential:    Folder containing final potential
 ```

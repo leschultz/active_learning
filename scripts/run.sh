@@ -117,6 +117,13 @@ if [ $n_preselected -gt 0 ]; then
     ITERS=$((ITERS+1))
 
 elif  [ $n_preselected -eq 0 ]; then
+
+    # Move potential back to original folder
+    mv curr.mtp $POTDIR
+    mv state.als $POTDIR
+    mv train.cfg $POTDIR
+    rm $POTDIR/out.cfg
+
     exit
 fi
 
