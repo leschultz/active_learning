@@ -17,7 +17,7 @@ Execute the following command:
 ```
 
 ## Tool description
-The files along with their description follow the convention of \<name: \> \<description\> below. Make sure to edit files in the examples directory in your own run. All files in the examles directory are needed along with their naming convention.
+The files along with their description follow the convention of \<name: \> \<description\> below. Make sure to edit files in the examples directory in your own run. All files in the examles directory are needed along with their naming convention. The order of listed elements in the POTCAR must match the order of elements in the POSCAR.
 
 ```
 active_learning

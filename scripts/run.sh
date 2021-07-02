@@ -72,9 +72,10 @@ touch preselected.cfg
 md_job $TOPDIR "$MASSES"  # Preapare MD job
 
 # Add potential files
-cp $POTDIR/curr.mtp .  # Needed for MD
-cp $POTDIR/state.als . # Needed for MD
-cp $POTDIR/train.cfg . # Needed for adding frames to training
+mv $POTDIR/curr.mtp .  # Needed for MD
+mv $POTDIR/state.als . # Needed for MD
+mv $POTDIR/train.cfg . # Needed for adding frames to training
+mv $POTDIR/out.cfg . # Not needed but copied for completness
 
 $LMP md.in  # Has to run in serial because of active learning
 
@@ -91,15 +92,19 @@ if [ $n_preselected -gt 0 ]; then
     cp curr.mtp ../dft
     cp state.als ../dft
     cp train.cfg ../dft
+    cp out.cfg ../dft
 
     # Calculate energies and forces and convert LAMMPS to MLIP format.
     cd ../dft
     dft_job $TOPDIR $MPI $VASP ../train.cfg
-    cp diff.cfg ../
-    cp curr.mtp ../
-    cp state.als ../
-    cp train.cfg ../
-    cd ../
+
+    # Prepare retraining
+    mkdir ../retrain
+    cp diff.cfg ../retrain
+    cp curr.mtp ../retrain
+    cp state.als ../retrain
+    cp train.cfg ../retrain
+    cd ../retrain
 
     # Re-train the current potential
     $MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --update-mindist
@@ -111,7 +116,8 @@ if [ $n_preselected -gt 0 ]; then
     cp curr.mtp $POTDIR
     cp state.als $POTDIR
     cp train.cfg $POTDIR
-    cd ../
+    cp out.cfg $POTDIR
+    cd ../../
 
     # Increment counter
     ITERS=$((ITERS+1))
@@ -122,7 +128,7 @@ elif  [ $n_preselected -eq 0 ]; then
     cp curr.mtp $POTDIR
     cp state.als $POTDIR
     cp train.cfg $POTDIR
-    rm $POTDIR/out.cfg
+    cp out.cfg $POTDIR
 
     exit
 fi
