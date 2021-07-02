@@ -1,6 +1,14 @@
-units           metal
-atom_style      atomic
-boundary        p p p
+# Isothermal viscosity template using Green-Kubo formalism.
+
+###############################################################################
+
+# Starting parameters
+units      metal
+atom_style atomic
+dimension  3
+boundary   p p p
+
+###############################################################################
 
 # START DO NOT TOUCH
 read_data       input.pos
@@ -11,103 +19,80 @@ pair_coeff * *
 
 ###############################################################################
 
-# Time variables
-variable mytimestep                equal  0.001
+# Constants
+variable kb             equal  1.3806504e-23    # [J/K]
 
-# Random seed
-variable seed                      equal  546080
+# Conversions for viscosity calculation
+variable bar2Pa         equal 100000.0
+variable A2m            equal 1.0e-10
+variable ps2s           equal 1.0e-12
+variable convert        equal ${bar2Pa}*${bar2Pa}*${ps2s}*${A2m}*${A2m}*${A2m}
 
 # Run variables
-variable eqtemp                    equal  2000
-variable dT                        equal  100
-variable i                         loop   12
-variable stephold                  equal  100000
+variable mytimestep     equal 0.001                     # The timestep
+variable corlength      equal 1000                      # Correlation length
+variable sampleinterval equal 100                       # Sample interval
+
+variable holdtemp       equal 2000                      # Hold temperature
+variable tempdamp       equal 0.1                       # Temperature damp
+variable holdsteps      equal 10000000                   # Hold steps
 
 # Computed values by LAMMPS
-compute  temp      all temp                 # Overall temperature
-compute  pressure  all pressure thermo_temp # Overall pressure
-compute  pe        all pe                   # Potenntial energy
-compute  ke        all ke                   # Kinetic energy
+compute  temp           all   temp                      # Overall temperature
+compute  pressure       all   pressure thermo_temp      # Overall pressure
+compute  pe             all   pe                        # Potenntial energy
+compute  ke             all   ke                        # Kinetic energy
+compute  msd            all   msd                       # The MSD
 
-variable vol       equal vol                # Simulation Volume
-variable enthalpy  equal enthalpy           # Simulation enthalpy
+variable time           equal step*dt                   # The time
+variable vol            equal vol                       # Simulation Volume
+variable enthalpy       equal enthalpy                  # Simulation enthalpy
+variable etotal         equal c_pe+c_ke                 # Total energy
 
-# Data output
-variable mydumprate                equal  100
+# Pressure tensor components
+variable pxx            equal pxx
+variable pyy            equal pyy
+variable pzz            equal pzz
+variable pxy            equal pxy
+variable pxz            equal pxz
+variable pyz            equal pyz
+
+# Data output file names
+variable mydumprate     equal ${corlength}*${sampleinterval}
 
 ################################################################################
 
-# Time step
 timestep ${mytimestep}
 
+# Define NVT run
+fix         visc_hold all nvt temp ${holdtemp} ${holdtemp} ${tempdamp}
+
+fix         SS all ave/correlate ${sampleinterval} ${corlength} ${mydumprate} &
+            v_pxy v_pxz v_pyz type auto file pressures.txt ave running
+
+variable    scale equal ${convert}*${vol}/(${kb}*${holdtemp})*${sampleinterval}*${mytimestep}
+variable    v11   equal trap(f_SS[3])
+variable    v22   equal trap(f_SS[4])
+variable    v33   equal trap(f_SS[5])
+variable    visc  equal ${scale}*(v_v11+v_v22+v_v33)/3.0
+
+# Save thermodynamic data
+fix         data_saving all ave/time 1 1 ${mydumprate} &
+            v_time c_temp c_pressure v_vol c_pe c_ke v_etotal v_enthalpy &
+            v_pxx v_pyy v_pzz v_pxy v_pxz v_pyz &
+            c_msd[1] c_msd[2] c_msd[3] c_msd[4] &
+	    v_visc &
+            file system.txt
+
+run         ${holdsteps}
+
+unfix       visc_hold
+unfix       SS
+
+unfix       data_saving
+
 ################################################################################
 
-shell         mkdir step_0
-
-# Save atom positions at an interval
-dump          my_dump all custom ${mydumprate} step_0/traj.lammpstrj &
-              id type xu yu zu vz vy vz
-
-dump_modify my_dump sort id
-
-# Save thermodynamic data
-fix           thermo_save all ave/time 1 1 ${mydumprate} &
-              c_temp c_pressure v_vol c_pe c_ke v_enthalpy &
-              file step_0/system.txt
-
-# Randomize initial velocities
-velocity      all create ${eqtemp} ${seed}
-
-# Define an NVT equilibrium hold
-fix           eq all nvt temp ${eqtemp} ${eqtemp} 0.1
-run           ${stephold}
-unfix         eq
-
-undump        my_dump
-unfix         thermo_save
-
-write_data    step_0/data.txt
-write_restart step_0/restart.txt
-print         "${eqtemp}" file step_0/temperature.txt
-
-# Loop through steps of isothermal holds
-label         start_loop
-
-variable      dir_name  string "step_${i}"
-shell         mkdir ${dir_name}
-
-# Save atom positions at an interval
-variable      dump_name string "${dir_name}/traj.lammpstrj"
-dump          my_dump all custom ${mydumprate} ${dump_name} &
-              id type xu yu zu vz vy vz
-
-dump_modify my_dump sort id
-
-# Save thermodynamic data
-variable      thermo_name string "${dir_name}/system.txt"
-fix           thermo_save all ave/time 1 1 ${mydumprate} &
-              c_temp c_pressure v_vol c_pe c_ke v_enthalpy &
-              file ${thermo_name}
-
-# Begin the temperature hold
-variable      t equal ${eqtemp}-${i}*${dT}
-
-# Save the temperature set
-variable      temp_name string "${dir_name}/temperature.txt"
-print         "${t}" file ${temp_name}
-
-fix           step all nvt temp ${t} ${t} 0.1
-run           ${stephold}
-unfix         step
-
-variable      data_name string "${dir_name}/data.txt"
-variable      restart_name string "${dir_name}/restart.txt"
-
-write_data    ${data_name}
-write_restart ${restart_name}
-
-undump        my_dump
-unfix         thermo_save
-
-next          i
-jump          md.in start_loop
+# Data for final position and properties
+write_data    data.txt
+write_restart restart.txt

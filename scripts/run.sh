@@ -72,9 +72,9 @@ touch preselected.cfg
 md_job $TOPDIR "$MASSES"  # Preapare MD job
 
 # Add potential files
-mv $POTDIR/curr.mtp .  # Needed for MD
-mv $POTDIR/state.als . # Needed for MD
-mv $POTDIR/train.cfg . # Needed for adding frames to training
+cp $POTDIR/curr.mtp .  # Needed for MD
+cp $POTDIR/state.als . # Needed for MD
+cp $POTDIR/train.cfg . # Needed for adding frames to training
 
 $LMP md.in  # Has to run in serial because of active learning
 
@@ -87,18 +87,18 @@ if [ $n_preselected -gt 0 ]; then
     # Add configurations to the training set from preselected
     mlp select-add curr.mtp train.cfg preselected.cfg diff.cfg --als-filename=state.als
     mkdir ../dft
-    mv diff.cfg ../dft
-    mv curr.mtp ../dft
-    mv state.als ../dft
-    mv train.cfg ../dft
+    cp diff.cfg ../dft
+    cp curr.mtp ../dft
+    cp state.als ../dft
+    cp train.cfg ../dft
 
     # Calculate energies and forces and convert LAMMPS to MLIP format.
     cd ../dft
     dft_job $TOPDIR $MPI $VASP ../train.cfg
-    mv diff.cfg ../
-    mv curr.mtp ../
-    mv state.als ../
-    mv train.cfg ../
+    cp diff.cfg ../
+    cp curr.mtp ../
+    cp state.als ../
+    cp train.cfg ../
     cd ../
 
     # Re-train the current potential
@@ -108,9 +108,9 @@ if [ $n_preselected -gt 0 ]; then
     mlp calc-grade curr.mtp train.cfg diff.cfg out.cfg --als-filename=state.als
     
     # Move back to potential folder
-    mv curr.mtp $POTDIR
-    mv state.als $POTDIR
-    mv train.cfg $POTDIR
+    cp curr.mtp $POTDIR
+    cp state.als $POTDIR
+    cp train.cfg $POTDIR
     cd ../
 
     # Increment counter
@@ -119,9 +119,9 @@ if [ $n_preselected -gt 0 ]; then
 elif  [ $n_preselected -eq 0 ]; then
 
     # Move potential back to original folder
-    mv curr.mtp $POTDIR
-    mv state.als $POTDIR
-    mv train.cfg $POTDIR
+    cp curr.mtp $POTDIR
+    cp state.als $POTDIR
+    cp train.cfg $POTDIR
     rm $POTDIR/out.cfg
 
     exit
