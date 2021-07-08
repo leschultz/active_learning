@@ -20,7 +20,7 @@ cd aimd
 AIMDDIR=$(pwd)
 
 # Generate VASP run files and get element masses
-MASSES=$(aimd_job $TOPDIR)
+aimd_job $TOPDIR
 
 # Run AIMD
 $MPI $VASP
