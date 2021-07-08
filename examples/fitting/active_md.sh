@@ -8,4 +8,4 @@ VASP='vasp_std'                            # VASP
 WRKDIR=~/packages/active_learning/scripts  # Active Learning Scripts
 
 # Start active learning
-source $WRKDIR/run.sh
+source $WRKDIR/fit.sh

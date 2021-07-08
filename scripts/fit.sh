@@ -75,6 +75,7 @@ md_job $TOPDIR "$MASSES" "$ELEMS"  # Preapare MD job
 mv $POTDIR/curr.mtp .  # Needed for MD
 mv $POTDIR/state.als . # Needed for MD
 mv $POTDIR/train.cfg . # Needed for adding frames to training
+mv $POTDIR/mlip.ini . # Neede for potential parameters
 mv $POTDIR/out.cfg . # Not needed but copied for completness
 
 $LMP md.in  # Has to run in serial because of active learning
@@ -92,6 +93,7 @@ if [ $n_preselected -gt 0 ]; then
     cp curr.mtp ../dft
     cp state.als ../dft
     cp train.cfg ../dft
+    cp mlip.ini ../dft
     cp out.cfg ../dft
 
     # Calculate energies and forces and convert LAMMPS to MLIP format.
@@ -104,6 +106,7 @@ if [ $n_preselected -gt 0 ]; then
     cp curr.mtp ../retrain
     cp state.als ../retrain
     cp train.cfg ../retrain
+    cp mlip.ini ../retrain
     cd ../retrain
 
     # Re-train the current potential
@@ -117,6 +120,7 @@ if [ $n_preselected -gt 0 ]; then
     cp state.als $POTDIR
     cp train.cfg $POTDIR
     cp out.cfg $POTDIR
+    cp mlip.ini $POTDIR
     cd ../../
 
     # Increment counter
@@ -128,6 +132,7 @@ elif  [ $n_preselected -eq 0 ]; then
     cp curr.mtp $POTDIR
     cp state.als $POTDIR
     cp train.cfg $POTDIR
+    cp mlip.ini $POTDIR
     cp out.cfg $POTDIR
 
     exit
