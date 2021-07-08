@@ -69,7 +69,7 @@ cd md
 # Copy starting postions to LAMMPS run
 $WRKDIR/convert/poscar2lammps.awk $AIMDDIR/POSCAR > input.pos
 touch preselected.cfg
-md_job $TOPDIR "$MASSES"  # Preapare MD job
+md_job $TOPDIR "$MASSES" "$ELEMS"  # Preapare MD job
 
 # Add potential files
 mv $POTDIR/curr.mtp .  # Needed for MD
