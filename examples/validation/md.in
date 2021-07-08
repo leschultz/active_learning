@@ -1,0 +1,24 @@
+###############################################################################
+
+# Starting parameters
+units      metal
+atom_style atomic
+dimension  3
+boundary   p p p
+
+###############################################################################
+
+# START DO NOT TOUCH
+read_data       input.pos
+include         masses.txt
+pair_style mlip mlip.ini
+pair_coeff * *
+# END DO NOT TOUCH
+
+###############################################################################
+timestep    0.001
+thermo      1000
+dump        mydump all atom 10000 dump.atom
+
+fix         hold all nvt temp 2000 2000 0.1
+run         100000

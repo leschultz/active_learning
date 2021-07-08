@@ -1,0 +1,42 @@
+MTPR from curr.mtp, Database: test.cfg
+
+		* * * TRAIN ERRORS * * *
+
+_________________Errors report_________________
+Energy:
+	Errors checked for 42 configurations
+	Maximal absolute difference = 1.5675
+	Average absolute difference = 1.0054
+	RMS     absolute difference = 1.03465
+
+Energy per atom:
+	Errors checked for 42 configurations
+	Maximal absolute difference = 0.03135
+	Average absolute difference = 0.020108
+	RMS     absolute difference = 0.020693
+
+Forces:
+	Errors checked for 2100 atoms
+	Maximal absolute difference = 1.38866
+	Average absolute difference = 0.175127
+	RMS     absolute difference = 0.330852
+	Max(ForceDiff) / Max(Force) = 0.12637
+	RMS(ForceDiff) / RMS(Force) = 0.170361
+
+Stresses (in eV):
+	Errors checked for 42 configurations
+	Maximal absolute difference = 33.2625
+	Average absolute difference = 1.77853
+	RMS     absolute difference = 6.11335
+	Max(StresDiff) / Max(Stres) = 0.0408255
+	RMS(StresDiff) / RMS(Stres) = 0.0367281
+
+Stresses (in GPa):
+	Errors checked for 42 configurations
+	Maximal absolute difference = 10.0098
+	Average absolute difference = 0.53522
+	RMS     absolute difference = 1.83972
+	Max(StresDiff) / Max(Stres) = 0.0408255
+	RMS(StresDiff) / RMS(Stres) = 0.0367281
+_______________________________________________
+

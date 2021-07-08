@@ -1,0 +1,67 @@
+           RANDOM_SEED =         232149922                0                0
+                MDALGO =   2
+               SCALING =       0
+
+   original number of atomic DOF:        147
+   number of independent constraints:      0
+   number of active DOF:                 147
+
+========================================
+         MD step No.       1
+========================================
+
+  Atomic velocities initialized by STEP_tb
+
+  >Energies
+                    E_tot             E_pot             E_kin          E_spring           E_const               EPS                ES
+   e_b>   -0.18504558E+03   -0.19771313E+03    0.12667557E+02    0.00000000E+00    0.00000000E+00    0.00000000E+00
+    0.00000000E+00
+
+  >Temperature
+               T_sim     T_inst
+   tmprt>   2000.000   2000.000
+
+  >Thermostat:
+           s(n+1) sdot(n+1)      s(n)   sdot(n)        Qs
+   s_b>   0.00004   0.00009   0.00000   0.00000   3.00000
+
+           RANDOM_SEED =         232149922              600                0
+
+========================================
+         MD step No.       2
+========================================
+
+  >Energies
+                    E_tot             E_pot             E_kin          E_spring           E_const               EPS                ES
+   e_b>   -0.18504391E+03   -0.19762131E+03    0.12576267E+02    0.00000000E+00    0.00000000E+00    0.89031511E-05
+    0.11220829E-02
+
+  >Temperature
+               T_sim     T_inst
+   tmprt>   2000.000   1985.587
+
+  >Thermostat:
+           s(n+1) sdot(n+1)      s(n)   sdot(n)        Qs
+   s_b>   0.00012   0.00006   0.00004   0.00009   3.00000
+
+           RANDOM_SEED =         232149922              600                0
+
+========================================
+         MD step No.       3
+========================================
+
+  >Energies
+                    E_tot             E_pot             E_kin          E_spring           E_const               EPS                ES
+   e_b>   -0.18504094E+03   -0.19746493E+03    0.12420985E+02    0.00000000E+00    0.00000000E+00    0.40154152E-05
+    0.29977267E-02
+
+  >Temperature
+               T_sim     T_inst
+   tmprt>   2000.000   1961.070
+
+  >Thermostat:
+           s(n+1) sdot(n+1)      s(n)   sdot(n)        Qs
+   s_b>   0.00009  -0.00011   0.00012   0.00006   3.00000
+
+           RANDOM_SEED =         232149922              600                0
+
