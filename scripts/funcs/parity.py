@@ -2,6 +2,7 @@ from matplotlib import pyplot as pl
 from sklearn import metrics
 
 import numpy as np
+import json
 
 
 def eval_metrics(y, y_pred):
@@ -23,7 +24,7 @@ def eval_metrics(y, y_pred):
     return results
 
 
-def parity(mets, y, y_pred, name):
+def parity(mets, y, y_pred, name, units):
     '''
     Make a paroody plot.
     '''
@@ -78,12 +79,21 @@ def parity(mets, y, y_pred, name):
     ax.set_ylim(limits)
     ax.legend()
 
-    ax.set_xlabel('Predicted '+name)
-    ax.set_ylabel('Actual '+name)
+    ax.set_xlabel('Predicted {} {}'.format(name, units))
+    ax.set_ylabel('Actual {} {}'.format(name, units))
 
     fig.tight_layout()
     fig.savefig(name)
     pl.close(fig)
+
+    data = {}
+    data['y_pred'] = y_pred
+    data['y'] = y
+    data['metrics'] = mets
+
+    jsonfile = '{}.json'.format(name)
+    with open(jsonfile, 'w') as handle:
+        json.dump(data, handle)
 
 
 def load(true, pred):
@@ -128,8 +138,8 @@ def main():
     fmets = eval_metrics(f, f_pred)
     emets = eval_metrics(e, e_pred)
 
-    parity(fmets, f, f_pred, r'Force [eV/$AA$]')
-    parity(emets, e, e_pred, 'Energy [eV]')
+    parity(fmets, f, f_pred, 'Force', r'[eV/$AA$]')
+    parity(emets, e, e_pred, 'Energy', '[eV]')
 
 
 if __name__ == '__main__':

@@ -3,11 +3,23 @@ TOPDIR=$(pwd)
 POTDIR=$TOPDIR/run/potential
 MASSES=$(cat POTCAR | grep MASS | awk -F ' ' '{print $3}' | sed 's/\;//g')
 ELEMS=$(cat POTCAR | grep 'VRHFIN =' | grep -oP '(?<==).*?(?=:)')
+ATOMS=$(awk 'NR==7{print $0}' POSCAR)
+
+# Get the composition
+for i in "${!MASSES[@]}";
+do
+    COMP="${ELEMS[i]}${ATOMS[i]}"
+done
 
 cd $POTDIR
 cd ..
-cp -r $POTDIR potential_test
-cd potential_test
+rm -rf test
+mkdir test
+cd test
+
+mkdir md
+cd md
+cp -r $POTDIR/* .
 
 # Run LAMMPS that selects test trajectories
 cp $TOPDIR/md_test.in .
@@ -25,28 +37,37 @@ do
 done
 
 $MPI $LMP md_test.in
+cd ..
 
 # Convert to POSCARs for VASP
-python3 $WRKDIR/funcs/convert.py dump.atom $COMP
+mkdir aimd
+cd aimd
 
+python3 $WRKDIR/funcs/convert.py ../md/dump.atom $COMP
+
+# Prepare test configurations
 touch test.cfg
-
 for i in $(find ./ -type f -name POSCAR);
 do
     cd $(dirname $i)
 
-    cp ../KPOINTS .
-    cp ../TEST_INCAR ./INCAR
-    cp ../POTCAR .
+    cp $TOPDIR/KPOINTS .
+    cp $TOPDIR/TEST_INCAR ./INCAR
+    cp $TOPDIR/POTCAR .
 
     $MPI $VASP
 
     mlp convert-cfg --input-format=vasp-outcar OUTCAR test.cfg 
-    cat test.cfg >> ../potential/test.cfg
+    cat test.cfg >> ../test.cfg
     cd -
 done
 
-mlp calc-errors curr.mtp test.cfg > test_info.txt
+cd ..
+mkdir ml
+cd ml
+
+cp ../md/curr.mtp .
+cp ../aimd/test.cfg .
 mlp calc-efs curr.mtp test.cfg test_pred.cfg
 
-python3 ../../parity.py
+python3 $WRKDIR/funcs/parity.py
