@@ -138,7 +138,7 @@ def main():
     fmets = eval_metrics(f, f_pred)
     emets = eval_metrics(e, e_pred)
 
-    parity(fmets, f, f_pred, 'Force', r'[eV/$AA$]')
+    parity(fmets, f, f_pred, 'Force', r'[eV/$\AA$]')
     parity(emets, e, e_pred, 'Energy', '[eV]')
 
 
