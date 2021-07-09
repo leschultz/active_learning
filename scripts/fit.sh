@@ -7,6 +7,7 @@ rm -rf run
 source $WRKDIR/run_types/gen_aimd.sh
 source $WRKDIR/run_types/gen_dft.sh
 source $WRKDIR/run_types/gen_md.sh
+source $WRKDIR/funcs/gen_parity.sh
 
 TOPDIR=$(pwd)
 
@@ -57,7 +58,7 @@ cd md_dft
 
 # Start infinite loop
 ITERS=0
-while [ 1 -gt 0 ]
+while true
 do
 
 mkdir $ITERS
@@ -75,7 +76,7 @@ md_job $TOPDIR "$MASSES" "$ELEMS"  # Preapare MD job
 mv $POTDIR/curr.mtp .  # Needed for MD
 mv $POTDIR/state.als . # Needed for MD
 mv $POTDIR/train.cfg . # Needed for adding frames to training
-mv $POTDIR/mlip.ini . # Neede for potential parameters
+cp $TOPDIR/mlip.ini . # Neede for potential parameters
 mv $POTDIR/out.cfg . # Not needed but copied for completness
 
 $LMP md.in  # Has to run in serial because of active learning
@@ -121,7 +122,10 @@ if [ $n_preselected -gt 0 ]; then
     cp train.cfg $POTDIR
     cp out.cfg $POTDIR
     cp mlip.ini $POTDIR
-    cd ../../
+
+    RETRAINDIR=$(pwd)
+    test
+    cd ../../../
 
     # Increment counter
     ITERS=$((ITERS+1))

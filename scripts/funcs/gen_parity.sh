@@ -1,17 +1,21 @@
+test ()
+{
 # Create potential test
-TOPDIR=$(pwd)
-POTDIR=$TOPDIR/run/potential
-MASSES=$(cat POTCAR | grep MASS | awk -F ' ' '{print $3}' | sed 's/\;//g')
-ELEMS=$(cat POTCAR | grep 'VRHFIN =' | grep -oP '(?<==).*?(?=:)')
-ATOMS=$(awk 'NR==7{print $0}' POSCAR)
+ATOMS=$(awk 'NR==7{print $0}' $TOPDIR/POSCAR)
+
+# Convert to array
+ELEARR=($ELEMS)
+ATARR=($ATOMS)
+MASARR=($MASSES)
 
 # Get the composition
-for i in "${!MASSES[@]}";
+COMP=""
+for i in "${!ELEARR[@]}";
 do
-    COMP="${ELEMS[i]}${ATOMS[i]}"
+    COMP="$COMP${ELEARR[i]}${ATARR[i]}"
 done
 
-cd $POTDIR
+cd $RETRAINDIR
 cd ..
 rm -rf test
 mkdir test
@@ -30,9 +34,9 @@ sed -i '/select/Q' mlip.ini
 COUNTER=1
 rm -f masses.txt
 touch masses.txt
-for i in "${!MASSES[@]}";
+for i in "${!MASARR[@]}";
 do
-    echo "mass $COUNTER ${MASSES[i]}  # ${ELEMS[i]}" >> masses.txt
+    echo "mass $COUNTER ${MASARR[i]}  # ${ELEARR[i]}" >> masses.txt
     COUNTER=$((COUNTER + 1))
 done
 
@@ -71,3 +75,5 @@ cp ../aimd/test.cfg .
 mlp calc-efs curr.mtp test.cfg test_pred.cfg
 
 python3 $WRKDIR/funcs/parity.py
+
+}

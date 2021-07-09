@@ -3,13 +3,15 @@ from ase.io import read, write
 import sys
 import os
 
-a = read(sys.argv[1], index=':')
+if __name__ == '__main__':
 
-count = 0
-for i in a:
+    a = read(sys.argv[1], index=':')
 
-    i.symbols = sys.argv[2]
-    os.system('mkdir {}'.format(count))
-    write('{}/POSCAR'.format(count), i)
+    count = 0
+    for i in a:
 
-    count += 1
+        i.symbols = sys.argv[2]
+        os.system('mkdir {}'.format(count))
+        write('{}/POSCAR'.format(count), i)
+
+        count += 1
