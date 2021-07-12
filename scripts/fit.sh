@@ -139,6 +139,9 @@ elif  [ $n_preselected -eq 0 ]; then
     cp mlip.ini $POTDIR
     cp out.cfg $POTDIR
 
+    RETRAINDIR=$(pwd)
+    test
+
     exit
 fi
 
