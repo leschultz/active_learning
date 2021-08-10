@@ -1,0 +1,23 @@
+# electronic degrees
+LREAL = auto                   # real space projection
+PREC  = Normal                 # chose Low only after tests
+EDIFF = 1E-5                   # global break condition for electronic SC-loop
+ISMEAR = 0                     # determine how partial occupancies are set for each orbital
+SIGMA = 0.05                   # specifies the width of the smearing in eV
+ALGO = Fast                    # electronic minimisation algorithm
+ISYM = 0                       # no symmetry
+NELMIN = 4                     # minimum of steps per time step
+NELM = 60                      # maximum of steps per time step
+ISPIN = 2                      # spin polarization
+
+# MD
+IBRION = 0                     # main molecular dynamics tag
+ISIF = 7                       # calculations and degrees of freedom choices
+NSF = 100                      # the number of ionic steps
+POTIM = 0.3                    # the time step
+TEBEG = 2000                   # the beginning temprature
+TEEND = 2000                   # the final temperature
+
+# Optional saves
+LCHARG = .FALSE.               # no charge density written out
+LWAVE = .FALSE.                # no wave function coefficients written out
