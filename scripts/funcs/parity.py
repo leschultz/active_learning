@@ -24,7 +24,7 @@ def eval_metrics(y, y_pred):
     return results
 
 
-def parity(mets, y, y_pred, name, units):
+def parity(mets, y, y_pred, name, units, save):
     '''
     Make a paroody plot.
     '''
@@ -80,7 +80,7 @@ def parity(mets, y, y_pred, name, units):
     ax.set_xlabel('True {} {}'.format(name, units))
 
     fig.tight_layout()
-    fig.savefig(name)
+    fig.savefig(save)
     pl.close(fig)
 
     data = {}
@@ -88,7 +88,7 @@ def parity(mets, y, y_pred, name, units):
     data['y'] = y
     data['metrics'] = mets
 
-    jsonfile = '{}.json'.format(name)
+    jsonfile = '{}.json'.format(save)
     with open(jsonfile, 'w') as handle:
         json.dump(data, handle)
 
@@ -140,10 +140,7 @@ def parse(data):
     return coords, energies, stresses
 
 
-def main():
-
-    true = 'test.cfg'
-    pred = 'test_pred.cfg'
+def main(true, pred, save):
 
     f, f_pred, e, e_pred, s, s_pred = load(true, pred)
 
@@ -151,10 +148,11 @@ def main():
     emets = eval_metrics(e, e_pred)
     smets = eval_metrics(s, s_pred)
 
-    parity(fmets, f, f_pred, 'Force', r'[eV/$\AA$]')
-    parity(emets, e, e_pred, 'Energy', '[eV/atom]')
-    parity(smets, s, s_pred, 'Stress', '[eV]')
+    parity(fmets, f, f_pred, 'Force', r'[eV/$\AA$]', save+'_Force')
+    parity(emets, e, e_pred, 'Energy', '[eV/atom]', save+'_Energy')
+    parity(smets, s, s_pred, 'Stress', '[eV]', save+'_Stress')
 
 
 if __name__ == '__main__':
-    main()
+    main('test.cfg', 'test_pred.cfg', 'test')
+    main('train.cfg', 'train_pred.cfg', 'train')

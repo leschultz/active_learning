@@ -69,10 +69,16 @@ cd ..
 mkdir ml
 cd ml
 
+# Copy files needed for predictions
 cp ../md/curr.mtp .
 cp ../aimd/test.cfg .
+cp ../md/train.cfg
+
+# Test and train predictions
+mlp calc-efs curr.mtp train.cfg train_pred.cfg
 mlp calc-efs curr.mtp test.cfg test_pred.cfg
 
+# Generate parity plots
 python3 $WRKDIR/funcs/parity.py
 cd ..
 
