@@ -150,7 +150,14 @@ def main(true, pred, save):
 
     parity(fmets, f, f_pred, 'Force', r'[eV/$\AA$]', save+'_Force')
     parity(emets, e, e_pred, 'Energy', '[eV/atom]', save+'_Energy')
-    parity(smets, s, s_pred, 'Stress', '[eV]', save+'_Stress')
+    parity(
+           smets,
+           s,
+           s_pred,
+           'Volume Times Virial Stress',
+           '[eV]',
+           save+'_Stress'
+           )
 
 
 if __name__ == '__main__':
