@@ -15,29 +15,35 @@ MASSES=$(cat POTCAR | grep MASS | awk -F ' ' '{print $3}' | sed 's/\;//g')
 ELEMS=$(cat POTCAR | grep 'VRHFIN =' | grep -oP '(?<==).*?(?=:)')
 NELS=$(echo $ELEMS | grep -Eo '[[:alpha:]]+' | wc -w)
 
-# Search for any OUTCARS that may have ben previously fit
-PREFIT=$(find ./$PREFIT -type f -name 'OUTCAR')
-
 # Make run directory
 mkdir run
 cd run
 
-if (( ${#PREFIT[@]} != 0 )); then
+mkdir potential
+cd potential
+POTDIR=$(pwd)
 
-	mkdir potential
-	cd potential
-        POTDIR=$(pwd)
+if [ -d "${TOPDIR}/${PREFIT}" ]; then
+	# Search for any OUTCARS that may have ben previously fit
+	PREFIT=$(find "${TOPDIR}/${PREFIT}" -type f -name 'OUTCAR')
+	if (( ${#PREFIT[@]} != 0 )); then
 
-	touch train.cfg
+		touch train.cfg
+		for i in $PREFIT; do
+			mlp convert-cfg --input-format=vasp-outcar $i tr.cfg
+			cat tr.cfg >> train.cfg
+		done
+		rm tr.cfg
 
-	for i in $PREFIT; do
-		mlp convert-cfg --input-format=vasp-outcar $TOPDIR/$i tr.cfg
-		cat tr.cfg >> train.cfg
-	done
-	rm tr.cfg
-
+	else
+		echo "Need to provide initial training OUTCARS"
+		exit 1
+	fi
+elif [ -f "${TOPDIR}/${PREFIT}" ]; then
+	# Make a copy of training data
+	cp "${TOPDIR}/${PREFIT}" .
 else
-	echo "Need to provide initial training OUTCARS"
+	echo "Need to supply initial configuration or directory with OUTCARS."
 	exit 1
 fi
 
