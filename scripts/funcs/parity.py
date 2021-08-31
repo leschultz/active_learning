@@ -65,7 +65,7 @@ def parity(mets, y, y_pred, name, units, save):
     ax.plot(
             limits,
             limits,
-            label=r'$45^{\circ}$ Line',
+            label=r'$y=\hat{y}$ Line',
             color='k',
             linestyle=':',
             zorder=1
