@@ -101,13 +101,12 @@ def load(true, pred):
 
 def parse(data):
 
-    coords = []
+    forces = []
     energies = []
     stresses = []
 
     econd = False
     scond = False
-    atoms = 0
     with open(data, 'r') as handle:
         for i in handle:
             i = i.strip().split(' ')
@@ -115,16 +114,17 @@ def parse(data):
 
             if len(i) == 9:
                 header = i[-3:]
+                atoms = 0
             elif len(i) == 8:
                 points = list(map(float, i[-3:]))
                 for i in points:
-                    coords.append(i)
+                    forces.append(i)
                 atoms += 1
 
             elif 'Energy' in i:
                 econd = True
             elif econd:
-                energies.append(float(i[0]))
+                energies.append(float(i[0])/atoms)
                 econd = False
             elif 'PlusStress:' in i:
                 scond = True
@@ -134,10 +134,7 @@ def parse(data):
                     stresses.append(i)
                 scond = False
 
-    atoms //= len(energies)  # Count the number of atoms
-    energies = list(map(lambda x: x/atoms, energies))
-
-    return coords, energies, stresses
+    return forces, energies, stresses
 
 
 def main(true, pred, save):
