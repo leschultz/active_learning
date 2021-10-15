@@ -121,6 +121,11 @@ def remove(frames, n):
     energies = list(map(Decimal, energies))  # Keep precision
     energies = np.array(energies)
 
+    sizes = [i['Size'] for i in frames]
+    sizes = list(map(int, sizes))
+
+    energies = energies/sizes
+
     mean = np.mean(energies)
     std = np.std(energies)
     cut = n*std
@@ -202,6 +207,12 @@ def write(frames, name):
 
 if __name__ == '__main__':
 
+    print('*'*79)
+    print('Filtering')
     frames = read_cfg(sys.argv[1])
+    start = len(frames)
     frames = remove(frames, int(sys.argv[2]))
+    end = len(frames)
     write(frames, sys.argv[3])
+
+    print('Kept {} from {}'.format(end, start))

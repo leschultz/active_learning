@@ -54,7 +54,10 @@ sed -i "s/species_count.*/species_count = $NELS/g" curr.mtp
 sed -i "s/min_dist.*/min_dist = $MINDIST/g" curr.mtp
 
 # Create initial potential
-# Add filter on configuration to train on
+if [[ ! -z "${FILT_SIGMA}" ]]; then
+	python3 ${WRKDIR}/funcs/filter.py train.cfg ${FILT_SIGMA} train.cfg
+fi
+
 $MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp
 
 # Initialize active learning state
@@ -122,7 +125,9 @@ do
 	    cd ../retrain
 
 	    # Re-train the current potential
-	    # Add filter on configurations to train on
+	    if [[ ! -z "${FILT_SIGMA}" ]]; then
+	        python3 ${WRKDIR}/funcs/filter.py train.cfg ${FILT_SIGMA} train.cfg
+	    fi
 	    $MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --update-mindist
 	    
 	    # Update the active learning state
