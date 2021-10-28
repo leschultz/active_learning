@@ -1,4 +1,5 @@
 from decimal import Decimal
+from random import sample
 import numpy as np
 import sys
 
@@ -105,37 +106,43 @@ def read_cfg(name):
     return frames
 
 
-def remove(frames, n):
+def remove(frames, method, n):
     '''
-    Flags a configuration if the normalized energy is outside of n*sigma.
+    Flags a configuration if the normalized energy is outside of n*sigma
+    or randomly pull n configurations.
 
     inputs:
         frames = The parsed frames from MLIP.
-        n = The multiple for sigma filtering.
+        method = Either remove by sigma or just n configurations.
+        n = The multiple for sigma filtering or the number of configurations.
 
     outputs:
         frames = The subset of selected frames.
     '''
 
-    energies = [i['Energy'] for i in frames]
-    energies = list(map(Decimal, energies))  # Keep precision
-    energies = np.array(energies)
+    if method == 'sigma':
+        energies = [i['Energy'] for i in frames]
+        energies = list(map(Decimal, energies))  # Keep precision
+        energies = np.array(energies)
 
-    sizes = [i['Size'] for i in frames]
-    sizes = list(map(int, sizes))
+        sizes = [i['Size'] for i in frames]
+        sizes = list(map(int, sizes))
 
-    energies = energies/sizes
+        energies = energies/sizes
 
-    mean = np.mean(energies)
-    std = np.std(energies)
-    cut = n*std
+        mean = np.mean(energies)
+        std = np.std(energies)
+        cut = n*std
 
-    upper = mean+cut
-    lower = mean-cut
+        upper = mean+cut
+        lower = mean-cut
 
-    cond = (energies >= lower) & (energies <= upper)
+        cond = (energies >= lower) & (energies <= upper)
 
-    frames = [i for i, j in zip(frames, cond) if j == True]
+        frames = [i for i, j in zip(frames, cond) if j == True]
+
+    elif method == 'sample':
+        frames = sample(frames, n)
 
     return frames
 
@@ -211,8 +218,8 @@ if __name__ == '__main__':
     print('Filtering')
     frames = read_cfg(sys.argv[1])
     start = len(frames)
-    frames = remove(frames, int(sys.argv[2]))
+    frames = remove(frames, sys.argv[2], int(sys.argv[3]))
     end = len(frames)
-    write(frames, sys.argv[3])
+    write(frames, sys.argv[4])
 
     print('Kept {} from {}'.format(end, start))

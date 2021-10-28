@@ -55,7 +55,12 @@ sed -i "s/min_dist.*/min_dist = $MINDIST/g" curr.mtp
 
 # Create initial potential
 if [[ ! -z "${FILT_SIGMA}" ]]; then
-	python3 ${WRKDIR}/funcs/filter.py train.cfg ${FILT_SIGMA} train.cfg
+	python3 ${WRKDIR}/funcs/filter.py train.cfg sigma ${FILT_SIGMA} train.cfg
+fi
+
+# Fiter the starting configuration to make potential fitting faster
+if [[ ! -z "${FILT_SAMPLE}" ]]; then
+        python3 ${WRKDIR}/funcs/filter.py train.cfg sample ${FILT_SAMPLE} train.cfg
 fi
 
 $MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp
@@ -126,7 +131,7 @@ do
 
 	    # Re-train the current potential
 	    if [[ ! -z "${FILT_SIGMA}" ]]; then
-	        python3 ${WRKDIR}/funcs/filter.py train.cfg ${FILT_SIGMA} train.cfg
+	        python3 ${WRKDIR}/funcs/filter.py train.cfg sigma ${FILT_SIGMA} train.cfg
 	    fi
 	    $MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --update-mindist
 	    
