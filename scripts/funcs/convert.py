@@ -1,4 +1,3 @@
-from ase.io.lammpsrun import read_lammps_dump_text
 from ase.io import read, write
 import sys
 import os

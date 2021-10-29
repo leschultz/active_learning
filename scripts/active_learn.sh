@@ -156,7 +156,7 @@ do
 	    ITERS=$((ITERS+1))
 
 	# If n_preselected is equal to zero and finish
-	elif  [ $n_preselected -eq 0 ]; then
+	elif [ $n_preselected -eq 0 ]; then
 
 	    # Move potential back to original folder
 	    cp curr.mtp $POTDIR
