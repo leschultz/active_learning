@@ -29,7 +29,7 @@ do
     # Do DFT to get energies and forces
     $MPI $VASP
 
-    mlp convert-cfg OUTCAR calculated.cfg --input-format=vasp-outcar
+    mlp convert-cfg OUTCAR calculated.cfg --input-format=vasp-outcar --last
     cat calculated.cfg >> $TRAIN
     cd ../
 
