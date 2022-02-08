@@ -63,7 +63,7 @@ if [[ ! -z "${FILT_SAMPLE}" ]]; then
         python3 ${WRKDIR}/funcs/filter.py train.cfg sample ${FILT_SAMPLE} train.cfg
 fi
 
-$MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp
+$MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --max-iter=${MAX_ITER} --bfgs-conv-tol=${CONV_TOL}
 
 # Initialize active learning state
 mlp calc-grade curr.mtp train.cfg train.cfg out.cfg --als-filename=state.als
@@ -133,7 +133,7 @@ do
 	    if [[ ! -z "${FILT_SIGMA}" ]]; then
 	        python3 ${WRKDIR}/funcs/filter.py train.cfg sigma ${FILT_SIGMA} train.cfg
 	    fi
-	    $MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --update-mindist
+	    $MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --update-mindist --max-iter=${MAX_ITER} --bfgs-conv-tol=${CONV_TOL}
 	    
 	    # Update the active learning state
 	    mlp calc-grade curr.mtp train.cfg diff.cfg out.cfg --als-filename=state.als

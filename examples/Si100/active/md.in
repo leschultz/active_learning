@@ -24,13 +24,13 @@ variable    iterations loop  4
 timestep    0.001
 
 # Define the trajectories used for a test set
-dump        testdump all atom 10000 dump.atom
+dump        testdump all atom 1000 dump.atom
 
 label       start_loop
 variable    t equal ${start_temp}-(${iterations}-1)*${dT}
 
 fix         hold all nvt temp ${t} ${t} 0.1
-run         10000
+run         1000
 
 next        iterations
 jump        md.in start_loop

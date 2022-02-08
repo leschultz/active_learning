@@ -7,8 +7,8 @@ VASP='vasp_std'                                # VASP
 WRKDIR=~/packages/active_learning/scripts      # Active Learning Scripts
 PREFIT=../train.cfg                            # Initial AIMD to fit to
 ACTIVE_PARITY=true                             # Whether to produce parity plots for each loop
-FILT_SIGMA=3                                   # Remove energies/atom outside FILT_SIGMA*sigma
-FILT_SAMPLE=100                                # Only start with 100 random configurations
+MAX_ITER=1000                                  # Maximum iterations when training (default 1000)
+CONV_TOL=0.001                                 # Error tolerance when training (default 0.001)
 
 # Start active learning
 source $WRKDIR/active_learn.sh                 # Fit the potential
