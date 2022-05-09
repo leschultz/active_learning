@@ -1,6 +1,7 @@
 from matplotlib import pyplot as pl
 from sklearn import metrics
 
+import pandas as pd
 import numpy as np
 import json
 
@@ -117,8 +118,13 @@ def parse(data):
                 atoms = 0
             elif len(i) == 8:
                 points = list(map(float, i[-3:]))
-                for i in points:
-                    forces.append(i)
+                element = int(i[1])
+                forces.append({
+                               'element': element,
+                               'fx': points[0],
+                               'fy': points[1],
+                               'fz': points[2],
+                               })
                 atoms += 1
 
             elif 'Energy' in i:
@@ -141,10 +147,56 @@ def main(true, pred, save):
 
     f, f_pred, e, e_pred, s, s_pred = load(true, pred)
 
+    # Prepare data for per_elemnt analysis
+    dff = pd.DataFrame(f)
+    dff_pred = pd.DataFrame(f_pred)
+    dff['set'] = 'test'
+    dff_pred['set'] = 'pred'
+    df = pd.concat([dff, dff_pred])
+
+    for i, j in df.groupby('element'):
+        k = j.loc[j['set'] == 'test']
+        l = j.loc[j['set'] == 'pred']
+        elfx = k['fx'].tolist()
+        elfy = k['fy'].tolist()
+        elfz = k['fz'].tolist()
+        elf = elfx+elfy+elfz
+
+        elfx_pred = l['fx'].tolist()
+        elfy_pred = l['fy'].tolist()
+        elfz_pred = l['fz'].tolist()
+        elf_pred = elfx_pred+elfy_pred+elfz_pred
+
+        fmets = eval_metrics(elf, elf_pred)
+        fxmets = eval_metrics(elfx, elfx_pred)
+        fymets = eval_metrics(elfy, elfy_pred)
+        fzmets = eval_metrics(elfz, elfz_pred)
+
+        parity(fmets, elf, elf_pred, 'Force', r'[eV/$\AA$]', save+'_Force'+str(i))
+        parity(fxmets, elfx, elfx_pred, 'Force', r'[eV/$\AA$]', save+'_xForce'+str(i))
+        parity(fymets, elfy, elfy_pred, 'Force', r'[eV/$\AA$]', save+'_yForce'+str(i))
+        parity(fzmets, elfz, elfz_pred, 'Force', r'[eV/$\AA$]', save+'_zForce'+str(i))
+
+    fx = [i['fx'] for i in f]
+    fy = [i['fy'] for i in f]
+    fz = [i['fz'] for i in f]
+    f = fx+fy+fz
+
+    fx_pred = [i['fx'] for i in f_pred]
+    fy_pred = [i['fy'] for i in f_pred]
+    fz_pred = [i['fz'] for i in f_pred]
+    f_pred = fx_pred+fy_pred+fz_pred
+
     fmets = eval_metrics(f, f_pred)
+    fxmets = eval_metrics(fx, fx_pred)
+    fymets = eval_metrics(fy, fy_pred)
+    fzmets = eval_metrics(fz, fz_pred)
     emets = eval_metrics(e, e_pred)
     smets = eval_metrics(s, s_pred)
 
+    parity(fxmets, fx, fx_pred, 'Force', r'[eV/$\AA$]', save+'_xForce')
+    parity(fymets, fy, fy_pred, 'Force', r'[eV/$\AA$]', save+'_yForce')
+    parity(fzmets, fz, fz_pred, 'Force', r'[eV/$\AA$]', save+'_zForce')
     parity(fmets, f, f_pred, 'Force', r'[eV/$\AA$]', save+'_Force')
     parity(emets, e, e_pred, 'Energy', '[eV/atom]', save+'_Energy')
     parity(
