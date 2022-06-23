@@ -29,8 +29,16 @@ do
     # Do DFT to get energies and forces
     $MPI $VASP
 
-    mlp convert-cfg OUTCAR calculated.cfg --input-format=vasp-outcar --last
-    cat calculated.cfg >> $TRAIN
+    mlp convert-cfg OUTCAR calculated.cfg --input-format=vasp-outcar --last > log.txt
+
+    # Skip if warning happen
+    if ! grep --quiet WARNING log.txt
+    then
+        cat calculated.cfg >> $TRAIN
+    fi
+
+    rm log.txt
+
     cd ../
 
 done

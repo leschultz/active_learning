@@ -60,8 +60,16 @@ do
 
     $MPI $VASP
 
-    mlp convert-cfg --input-format=vasp-outcar OUTCAR test.cfg 
-    cat test.cfg >> ../test.cfg
+    mlp convert-cfg --input-format=vasp-outcar OUTCAR test.cfg > log.txt
+
+    # Skip if warning happen
+    if ! grep --quiet WARNING log.txt
+    then
+        cat test.cfg >> ../test.cfg
+    fi
+
+    rm log.txt
+
     cd -
 done
 

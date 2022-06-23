@@ -23,17 +23,27 @@ mkdir potential
 cd potential
 POTDIR=$(pwd)
 
-if [ -d "${TOPDIR}/${PREFIT}" ]; then
-	# Search for any OUTCARS that may have ben previously fit
-	PREFIT=$(find "${TOPDIR}/${PREFIT}" -type f -name 'OUTCAR')
+echo $PREFIT
+if [ -d "${PREFIT}" ]; then
+	# Search for any OUTCARS that may have been previously fit
+	PREFIT=$(find "${PREFIT}" -type f -name 'OUTCAR')
 	if (( ${#PREFIT[@]} != 0 )); then
 
 		touch train.cfg
 		for i in $PREFIT; do
-			mlp convert-cfg --input-format=vasp-outcar $i tr.cfg
+
+                        mlp convert-cfg --input-format=vasp-outcar $i tr.cfg > log.txt
+
+			# Skip if warning happen
+			if grep --quiet WARNING log.txt
+			then
+				continue
+			fi
+
 			cat tr.cfg >> train.cfg
 		done
 		rm tr.cfg
+		rm log.txt
 
 	else
 		echo "Need to provide initial training OUTCARS"
@@ -108,6 +118,7 @@ do
 
 	    # Add configurations to the training set from preselected
 	    mlp select-add curr.mtp train.cfg preselected.cfg diff.cfg --als-filename=state.als
+	    rm preselected.cfg
 	    mkdir ../dft
 	    cp diff.cfg ../dft
 	    cp curr.mtp ../dft
@@ -157,6 +168,8 @@ do
 
 	# If n_preselected is equal to zero and finish
 	elif [ $n_preselected -eq 0 ]; then
+
+	    rm preselected.cfg
 
 	    # Move potential back to original folder
 	    cp curr.mtp $POTDIR
