@@ -66,6 +66,12 @@ do
     if ! grep --quiet WARNING log.txt
     then
         cat test.cfg >> ../test.cfg
+    elif grep --quiet Error OUTCAR
+    then
+        continue
+    elif grep --quiet WARNING OUTCAR
+    then
+        continue
     fi
 
     rm log.txt
