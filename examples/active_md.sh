@@ -4,7 +4,7 @@
 MPI="mpirun"                                         # MPI
 LMP="lmp_intel_cpu_intelmpi -in"                     # LAMMPS
 VASP='vasp_std'                                      # VASP
-WRKDIR="$(pwd)/../../active_learning/scripts"        # Active Learning Scripts
+WRKDIR="$(pwd)/../scripts"                           # Active Learning Scripts
 PREFIT="./train.cfg"                                 # Initial AIMD to fit to
 ACTIVE_PARITY=false                                  # Whether to produce parity plots for each loop
 MAX_ITER=1000                                        # Maximum iterations when training (default 1000)
