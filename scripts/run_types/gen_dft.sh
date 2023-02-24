@@ -26,6 +26,13 @@ do
     cp $TOPDIR/POTCAR .
     cp $TOPDIR/INCAR .
 
+    #if [[ -v ${PREV} ]]
+    #then
+    mv $PREV/CHGCAR .
+    mv $PREV/CHG .
+    mv $PREV/WAVECAR .
+    #fi
+
     # Do DFT to get energies and forces
     $MPI $VASP
 
@@ -38,6 +45,8 @@ do
     fi
 
     rm log.txt
+
+    PREV=$(pwd)
 
     cd ../
 

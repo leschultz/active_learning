@@ -22,58 +22,13 @@ cd run
 mkdir potential
 cd potential
 POTDIR=$(pwd)
-
-echo $PREFIT
-if [ -d "${PREFIT}" ]; then
-	# Search for any OUTCARS that may have been previously fit
-	PREFIT=$(find "${PREFIT}" -type f -name 'OUTCAR')
-	if (( ${#PREFIT[@]} != 0 )); then
-
-		touch train.cfg
-		for i in $PREFIT; do
-
-                        mlp convert-cfg --input-format=vasp-outcar $i tr.cfg > log.txt
-
-			# Skip if warning happen
-			if grep --quiet WARNING log.txt
-			then
-				continue
-			fi
-
-			cat tr.cfg >> train.cfg
-		done
-		rm tr.cfg
-		rm log.txt
-
-	else
-		echo "Need to provide initial training OUTCARS"
-		exit 1
-	fi
-elif [ -f "${TOPDIR}/${PREFIT}" ]; then
-	# Make a copy of training data
-	cp "${TOPDIR}/${PREFIT}" .
-else
-	echo "Need to supply initial configuration or directory with OUTCARS."
-	exit 1
-fi
+cp "${TOPDIR}/${PREFIT}" .
 
 # Prepare potential
-MINDIST=$(mlp mindist train.cfg | awk -F ': ' '{print $2}')
 cp $TOPDIR/curr.mtp ./curr.mtp
 sed -i "s/species_count.*/species_count = $NELS/g" curr.mtp
-sed -i "s/min_dist.*/min_dist = $MINDIST/g" curr.mtp
 
-# Create initial potential
-if [[ ! -z "${FILT_SIGMA}" ]]; then
-	python3 ${WRKDIR}/funcs/filter.py train.cfg sigma ${FILT_SIGMA} train.cfg
-fi
-
-# Fiter the starting configuration to make potential fitting faster
-if [[ ! -z "${FILT_SAMPLE}" ]]; then
-        python3 ${WRKDIR}/funcs/filter.py train.cfg sample ${FILT_SAMPLE} train.cfg
-fi
-
-$MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --max-iter=${MAX_ITER} --bfgs-conv-tol=${CONV_TOL}
+"$MPI" mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --update-mindist --max-iter=${MAX_ITER} --bfgs-conv-tol=${CONV_TOL}
 
 # Initialize active learning state
 mlp calc-grade curr.mtp train.cfg train.cfg out.cfg --als-filename=state.als
@@ -105,7 +60,7 @@ do
 	mv $POTDIR/curr.mtp .  # Needed for MD
 	mv $POTDIR/state.als . # Needed for MD
 	mv $POTDIR/train.cfg . # Needed for adding frames to training
-	cp $TOPDIR/mlip.ini . # Neede for potential parameters
+	cp $TOPDIR/mlip.ini . # Needed for potential parameters
 	mv $POTDIR/out.cfg . # Not needed but copied for completness
 
 	$LMP md.in  # Has to run in serial because of active learning
@@ -120,41 +75,37 @@ do
 	    mlp select-add curr.mtp train.cfg preselected.cfg diff.cfg --als-filename=state.als
 	    rm preselected.cfg
 	    mkdir ../dft
-	    cp diff.cfg ../dft
-	    cp curr.mtp ../dft
-	    cp state.als ../dft
-	    cp train.cfg ../dft
-	    cp mlip.ini ../dft
-	    cp out.cfg ../dft
+	    mv diff.cfg ../dft
+	    mv curr.mtp ../dft
+	    mv state.als ../dft
+	    mv train.cfg ../dft
+	    mv mlip.ini ../dft
+	    mv out.cfg ../dft
 
 	    # Calculate energies and forces and convert LAMMPS to MLIP format.
 	    cd ../dft
-	    dft_job $TOPDIR $MPI $VASP ../train.cfg
+	    dft_job $TOPDIR "$MPI" $VASP ../train.cfg
 
 	    # Prepare retraining
 	    mkdir ../retrain
-	    cp diff.cfg ../retrain
-	    cp curr.mtp ../retrain
-	    cp state.als ../retrain
-	    cp train.cfg ../retrain
-	    cp mlip.ini ../retrain
+	    mv diff.cfg ../retrain
+	    mv curr.mtp ../retrain
+	    mv state.als ../retrain
+	    mv train.cfg ../retrain
+	    mv mlip.ini ../retrain
 	    cd ../retrain
 
-	    # Re-train the current potential
-	    if [[ ! -z "${FILT_SIGMA}" ]]; then
-	        python3 ${WRKDIR}/funcs/filter.py train.cfg sigma ${FILT_SIGMA} train.cfg
-	    fi
-	    $MPI mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --update-mindist --max-iter=${MAX_ITER} --bfgs-conv-tol=${CONV_TOL}
+	    "$MPI" mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --update-mindist --max-iter=${MAX_ITER} --bfgs-conv-tol=${CONV_TOL}
 	    
 	    # Update the active learning state
 	    mlp calc-grade curr.mtp train.cfg diff.cfg out.cfg --als-filename=state.als
 	    
 	    # Move back to potential folder
-	    cp curr.mtp $POTDIR
-	    cp state.als $POTDIR
-	    cp train.cfg $POTDIR
-	    cp out.cfg $POTDIR
-	    cp mlip.ini $POTDIR
+	    mv curr.mtp $POTDIR
+	    mv state.als $POTDIR
+	    mv train.cfg $POTDIR
+	    mv out.cfg $POTDIR
+	    mv mlip.ini $POTDIR
 
 	    # Whether to produce on the fly parity plots
 	    if [ $ACTIVE_PARITY = true ]; then
@@ -172,11 +123,11 @@ do
 	    rm preselected.cfg
 
 	    # Move potential back to original folder
-	    cp curr.mtp $POTDIR
-	    cp state.als $POTDIR
-	    cp train.cfg $POTDIR
-	    cp mlip.ini $POTDIR
-	    cp out.cfg $POTDIR
+	    mv curr.mtp $POTDIR
+	    mv state.als $POTDIR
+	    mv train.cfg $POTDIR
+	    mv mlip.ini $POTDIR
+	    mv out.cfg $POTDIR
 
 	    test  # Genreate test set and parity plots
 

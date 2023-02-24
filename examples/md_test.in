@@ -1,0 +1,94 @@
+# Isothermal viscosity template using Green-Kubo formalism.
+
+###############################################################################
+
+# Starting parameters
+units      metal
+atom_style atomic
+dimension  3
+boundary   p p p
+
+###############################################################################
+
+# START DO NOT TOUCH
+read_data       input.pos
+include         masses.txt
+pair_style mlip mlip.ini
+pair_coeff * *
+# END DO NOT TOUCH
+
+###############################################################################
+
+# Constants
+variable kb             equal  1.3806504e-23    # [J/K]
+
+# Conversions for viscosity calculation
+variable bar2Pa         equal 100000.0
+variable A2m            equal 1.0e-10
+variable ps2s           equal 1.0e-12
+variable convert        equal ${bar2Pa}*${bar2Pa}*${ps2s}*${A2m}*${A2m}*${A2m}
+
+# Run variables
+variable mytimestep     equal 0.001                     # The timestep
+variable corlength      equal 1000                      # Correlation length
+variable sampleinterval equal 100                       # Sample interval
+
+variable holdtemp       equal 3000                      # Hold temperature
+variable dT             equal 50                        # The drop in temperature for holds
+variable iterations     loop  55                        # Number of isothermal holds
+variable tempdamp       equal 0.1                       # Temperature damp
+variable pdamp          equal 0.1                       # Pressure damp
+
+# Computed values by LAMMPS
+compute  temp           all   temp                      # Overall temperature
+compute  pressure       all   pressure thermo_temp      # Overall pressure
+compute  pe             all   pe                        # Potenntial energy
+compute  ke             all   ke                        # Kinetic energy
+compute  msd            all   msd                       # The MSD
+
+variable time           equal step*dt                   # The time
+variable vol            equal vol                       # Simulation volume
+variable enthalpy       equal enthalpy                  # Simulation enthalpy
+variable etotal         equal c_pe+c_ke                 # Total energy
+
+# Pressure tensor components
+variable pxx            equal pxx
+variable pyy            equal pyy
+variable pzz            equal pzz
+variable pxy            equal pxy
+variable pxz            equal pxz
+variable pyz            equal pyz
+
+# Data output file names
+variable mydumprate     equal ${corlength}*${sampleinterval}
+
+################################################################################
+
+timestep ${mytimestep}
+
+thermo 1000
+thermo_style custom step temp pe etotal press vol
+
+# Ramp up from 0 kelvin
+dump        testdump all atom 10000 dump.atom
+fix         ramp_up all npt temp 10.0 ${holdtemp} ${tempdamp} iso 0 0 ${pdamp}
+run         10000
+unfix       ramp_up
+
+# Do equilibration
+fix         equil_hold all npt temp ${holdtemp} ${holdtemp} ${tempdamp} iso 0 0 ${pdamp}
+run         10000
+
+unfix       equil_hold
+
+# Start quench with isothermal holds
+label       start_loop
+variable    t equal ${holdtemp}-(${iterations}-1)*${dT}
+
+# Do short npt equilibration
+fix         equil_hold all npt temp ${t} ${t} ${tempdamp} iso 0 0 ${pdamp}
+run         10000
+unfix       equil_hold
+
+next        iterations
+jump        md_test.in start_loop

@@ -24,4 +24,5 @@ cp $TOPDIR/mlip.ini .
 
 # The LAMMPS input file
 cp $TOPDIR/md.in .
+cp $TOPDIR/get_vol.sh .
 }
