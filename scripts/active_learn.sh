@@ -112,6 +112,16 @@ do
 		    test  # Genreate test set and parity plots
 	    fi
 
+	    # If MD is stable then stop
+	    if [ $EARLY_STOP = true ]; then
+
+	    	if grep -q "Total wall time" ../md/log.lammps; then
+			test
+			exit
+		fi
+			
+	    fi
+
 	    cd ../../
 
 	    # Increment counter

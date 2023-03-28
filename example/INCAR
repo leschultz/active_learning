@@ -8,3 +8,7 @@ NELM = 120                        # The maximum number of sc steps.
 
 # MD
 IBRION = -1                         # main molecular dynamics tag
+
+# Writing
+LCHARG = .FALSE.                  # no charge density written out
+LWAVE = .FALSE.                   # no wave function coefficients written out

@@ -1,0 +1,96 @@
+# Isothermal viscosity template using Green-Kubo formalism.
+
+###############################################################################
+
+# Starting parameters
+units      metal
+atom_style atomic
+dimension  3
+boundary   p p p
+
+###############################################################################
+
+# START DO NOT TOUCH
+read_data       input.pos
+include         masses.txt
+pair_style mlip mlip.ini
+pair_coeff * *
+# END DO NOT TOUCH
+
+###############################################################################
+
+variable holdtemp       equal 3000                      # Hold temperature
+variable dT             equal 300                       # The drop in temperature for holds
+variable dl             equal 0.01                      # The side lenght changes
+variable quench_iters   loop  10                        # Number of isothermal holds
+variable tempdamp       equal 0.1                       # Temperature damp
+variable pdamp          equal 1                         # Pressure damp
+variable mytimestep     equal 0.001
+variable dumprate       equal 100
+
+# Computed values by LAMMPS
+compute  temp           all   temp                      # Overall temperature
+compute  pressure       all   pressure thermo_temp      # Overall pressure
+compute  pe             all   pe                        # Potenntial energy
+compute  ke             all   ke                        # Kinetic energy
+
+variable time           equal step*dt                   # The time
+variable vol            equal vol                       # Simulation volume
+variable enthalpy       equal enthalpy                  # Simulation enthalpy
+variable etotal         equal c_pe+c_ke                 # Total energy
+
+variable convert        equal 6.24150907e-7
+variable pxx            equal pxx*v_vol*v_convert
+variable pyy            equal pyy*v_vol*v_convert
+variable pzz            equal pzz*v_vol*v_convert
+variable pxy            equal pxy*v_vol*v_convert
+variable pxz            equal pxz*v_vol*v_convert
+variable pyz            equal pyz*v_vol*v_convert
+
+################################################################################
+
+timestep ${mytimestep}
+
+thermo ${dumprate}
+thermo_style custom step temp pe etotal press vol
+
+# Ramp up from low temperature
+fix equil_hold all npt temp 10 ${holdtemp} ${tempdamp} iso 0 0 ${pdamp}
+run 100000
+unfix equil_hold
+
+# Do equlibration
+fix equil_hold all npt temp ${holdtemp} ${holdtemp} ${tempdamp} iso 0 0 ${pdamp}
+run 100000
+unfix equil_hold
+
+# Start quench with isothermal holds
+label quench_loop
+variable t equal ${holdtemp}-(${quench_iters}-1)*${dT}
+
+# Now create energy vs volume curve
+fix vol_curve all nvt temp ${holdtemp} ${holdtemp} ${tempdamp}
+
+variable lside equal ${vol}^(1/3)
+
+variable vol_iters      loop  50       # Number of volumes to test
+label volume_loop
+variable l equal ${lside}*(${vol_iters}*${dl}+0.8)
+
+change_box all x final 0.0 ${l} y final 0.0 ${l} z final 0.0 ${l} remap
+run 1
+
+next vol_iters
+jump md.in volume_loop
+
+unfix vol_curve
+
+change_box all x final 0.0 ${lside} y final 0.0 ${lside} z final 0.0 ${lside} remap
+
+# Do short npt equilibration
+fix equil_hold all npt temp ${t} ${t} ${tempdamp} iso 0 0 ${pdamp}
+run 10000
+unfix equil_hold
+
+next quench_iters
+jump md.in quench_loop
