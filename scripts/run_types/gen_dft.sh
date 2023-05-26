@@ -26,15 +26,11 @@ do
     cp $TOPDIR/POTCAR .
     cp $TOPDIR/INCAR .
 
-    #if [[ -v ${PREV} ]]
-    #then
-    mv $PREV/CHGCAR .
-    mv $PREV/CHG .
-    mv $PREV/WAVECAR .
-    #fi
-
     # Do DFT to get energies and forces
     $MPI $VASP
+
+    # Clean stuff
+    rm -v !("OUTCAR"|"POSCAR"|"KPOINTS"|"INCAR"|"POTCAR")
 
     mlp convert-cfg OUTCAR calculated.cfg --input-format=vasp-outcar --last > log.txt
 
@@ -44,9 +40,7 @@ do
         cat calculated.cfg >> $TRAIN
     fi
 
-    rm log.txt
-
-    PREV=$(pwd)
+    rm log.txt calculated.cfg
 
     cd ../
 

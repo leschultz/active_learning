@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Turn on for special remove
+shopt -s extglob
+
 # Clean
 rm -rf run
 
@@ -32,6 +35,7 @@ sed -i "s/species_count.*/species_count = $NELS/g" curr.mtp
 
 # Initialize active learning state
 mlp calc-grade curr.mtp train.cfg train.cfg out.cfg --als-filename=state.als
+rm out.cfg
 
 cd ..
 
@@ -61,7 +65,6 @@ do
 	mv $POTDIR/state.als . # Needed for MD
 	mv $POTDIR/train.cfg . # Needed for adding frames to training
 	cp $TOPDIR/mlip.ini . # Needed for potential parameters
-	mv $POTDIR/out.cfg . # Not needed but copied for completness
 
 	$LMP md.in  # Has to run in serial because of active learning
 
@@ -73,40 +76,32 @@ do
 
 	    # Add configurations to the training set from preselected
 	    mlp select-add curr.mtp train.cfg preselected.cfg diff.cfg --als-filename=state.als
-	    rm preselected.cfg
+	    rm preselected.cfg selected.cfg
 	    mkdir ../dft
 	    mv diff.cfg ../dft
 	    mv curr.mtp ../dft
 	    mv state.als ../dft
 	    mv train.cfg ../dft
 	    mv mlip.ini ../dft
-	    mv out.cfg ../dft
 
 	    # Calculate energies and forces and convert LAMMPS to MLIP format.
 	    cd ../dft
 	    dft_job $TOPDIR "$MPI" $VASP ../train.cfg
 
 	    # Prepare retraining
-	    mkdir ../retrain
-	    mv diff.cfg ../retrain
-	    mv curr.mtp ../retrain
-	    mv state.als ../retrain
-	    mv train.cfg ../retrain
-	    mv mlip.ini ../retrain
-	    cd ../retrain
+	    mv diff.cfg $POTDIR
+	    mv curr.mtp $POTDIR
+	    mv state.als $POTDIR
+	    mv train.cfg $POTDIR
+	    mv mlip.ini $POTDIR
+	    cd $POTDIR
 
 	    "$MPI" mlp train curr.mtp train.cfg --trained-pot-name=curr.mtp --update-mindist --max-iter=${MAX_ITER} --bfgs-conv-tol=${CONV_TOL}
 	    
 	    # Update the active learning state
 	    mlp calc-grade curr.mtp train.cfg diff.cfg out.cfg --als-filename=state.als
+	    rm out.cfg diff.cfg
 	    
-	    # Move back to potential folder
-	    mv curr.mtp $POTDIR
-	    mv state.als $POTDIR
-	    mv train.cfg $POTDIR
-	    mv out.cfg $POTDIR
-	    mv mlip.ini $POTDIR
-
 	    # Whether to produce on the fly parity plots
 	    if [ $ACTIVE_PARITY = true ]; then
 		    test  # Genreate test set and parity plots
@@ -117,12 +112,13 @@ do
 
 	    	if grep -q "Total wall time" ../md/log.lammps; then
 			test
+			rm ../md/log.lammps
 			exit
 		fi
 			
 	    fi
 
-	    cd ../../
+	    cd ../md_dft/
 
 	    # Increment counter
 	    ITERS=$((ITERS+1))
@@ -130,17 +126,8 @@ do
 	# If n_preselected is equal to zero and finish
 	elif [ $n_preselected -eq 0 ]; then
 
-	    rm preselected.cfg
-
-	    # Move potential back to original folder
-	    mv curr.mtp $POTDIR
-	    mv state.als $POTDIR
-	    mv train.cfg $POTDIR
-	    mv mlip.ini $POTDIR
-	    mv out.cfg $POTDIR
-
+	    rm preselected.cfg log.lammps selected.cfg
 	    test  # Genreate test set and parity plots
-
 	    exit
 	fi
 
